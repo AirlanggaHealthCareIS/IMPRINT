@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- Bootstrap core CSS -->
+		<link href="../assets/css/bootstrap.min.css" rel="stylesheet">
+		<!-- Custom styles for this apps -->
+		<link href="../assets/css/imprint.min.css" rel="stylesheet">
+		<link href="../assets/css/typicons.min.css" rel="stylesheet">
+		<!-- Core JS -->
+		<script type="text/javascript" src="../assets/js/jquery.min.js"></script>
+		<script type="text/javascript" src="../assets/js/bootstrap.min.js"></script>
+		<!-- FastClick -->
+		<script type="text/javascript" src="../assets/js/fastclick.js"></script>
+		<script type="application/javascript">
+			$(function() {
+				FastClick.attach(document.body);
+			});
+		</script>
+		<!-- Core Cordova -->
+		<script type="text/javascript" src="../assets/js/cordova-2.7.0.js"></script>
+		<script type="text/javascript" src="../assets/js/PushNotification.js"></script>
+		<script type="text/javascript" src="../assets/js/imprint.conf.js"></script>
+		<script type="text/javascript" src="../assets/js/imprint.min.js"></script>
+	</head>
+	<body class="body-signin">
+		<div class="container">
+			<form class="form-signin">
+				<h1 class="form-signin-heading">
+					<img src="../assets/images/logo.png"/>
+				</h1>
+				<h4>
+					Masukkan kode konfirmasi Anda 
+				</h4>
+				<div class="margin-tb-5px margin-top-50px"></div>
+				<div class="margin-tb-5px alert" style="display:none"></div>
+				<div class="margin-tb-5px">
+					<label for="inputEmail" class="sr-only">No Hp</label>
+					<input type="text" id="nohp" class="form-control input-md" placeholder="No. Hp" autofocus/>
+				</div>
+				<div class="margin-tb-5px">
+					<label for="inputEmail" class="sr-only">Kode Verifikasi</label>
+					<input type="text" id="kodeverifikasi" class="form-control input-md" placeholder="Kode Verifikasi" autofocus/>
+				</div>
+				
+				<div class="btn btn-md primary btn-block" id="btn-proses">P R O S E S</div>
+				<a href="login.html">
+					<div class="btn btn-md primary btn-block margin-top-20px" type="submit">Kembali Ke Login</div>
+				</a>
+			</form>
+		</div>
+	</body>
+	<script>
+		$(document).ready(function(){
+			init();
+			
+			$("#btn-proses").click(function(){
+				$(".alert").hide();
+				$(this).text("Memproses...");
+				goKonfirmasi();
+			});
+			
+		});
+		
+		/* Verifikasi user */
+		
+		function goKonfirmasi(){
+			var required = "nohp,kodeverifikasi";
+			var err = false;
+			var msg = '';
+			
+			if(cekRequired(required)){
+				var param 	= new Array();
+				param[0] 	= $("#nohp").val();//notelp
+				param[1] 	= $("#kodeverifikasi").val();//kodeverifikasi
+				
+				var xhjr	= $.ajax({
+								data		: { f: 'verifikasi', p: param },
+								dataType	: 'jsonp',
+								jsonp		: false,
+								url			: ws_host+"?callback=cbVer",
+								timeout		: ws_timeout
+							});
+				
+				xhjr.error(function(xhr,status){
+					err = true;
+					msg = status;
+				});
+			}
+			else{
+				err = true;
+				msg = "Lengkapi data yang dibutuhkan";
+			}
+			
+			if(err){
+				showWrong(msg);
+			}
+		}
+		
+		function cbVer(data){
+			if(data[0] == 1)
+				showWrong(data[1]);
+			else
+				showCorrect(data[1]);
+		}
+		
+		/* End verifikasi user */
+		
+		function showWrong(msg){
+			$(".alert").show();
+			$(".alert").addClass('alert-danger');
+			$(".alert").removeClass('alert-success');
+			$(".alert").text(msg);
+			$("#btn-proses").text("P R O S E S");
+		}
+		
+		function showCorrect(msg){
+			$(".alert").show();
+			$(".alert").removeClass('alert-danger');
+			$(".alert").addClass('alert-success');
+			$(".alert").text(msg);
+			$("#btn-proses").text("P R O S E S");
+		}
+	</script>
+</html>

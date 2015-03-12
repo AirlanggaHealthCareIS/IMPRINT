@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"  />
+		<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" />
+		<!-- Bootstrap core CSS -->
+		<link href="../assets/css/bootstrap.min.css" rel="stylesheet">
+		<!-- Custom styles for this apps -->
+		<link href="../assets/css/imprint.min.css" rel="stylesheet">
+		<link href="../assets/css/typicons.min.css" rel="stylesheet">
+		<!-- Core JS -->
+		<script type="text/javascript" src="../assets/js/jquery.min.js"></script>
+		<script type="text/javascript" src="../assets/js/bootstrap.min.js"></script>
+		<!-- FastClick -->
+		<script type="text/javascript" src="../assets/js/fastclick.js"></script>
+		<script type="application/javascript">
+			$(function() {
+				FastClick.attach(document.body);
+			});
+		</script>
+		<!-- Select Picker Plugin -->
+		<link href="../assets/css/bootstrap-select.css" rel="stylesheet">
+		<link href="../assets/css/bootstrap-select.min.css" rel="stylesheet">
+		<script type="text/javascript" src="../assets/js/bootstrap-select.js"></script>
+		<script type="text/javascript" src="../assets/js/bootstrap-select.min.js"></script>
+		<!-- Core Cordova -->
+		<script type="text/javascript" src="../assets/js/cordova-2.7.0.js"></script>
+		<script type="text/javascript" src="../assets/js/PushNotification.js"></script>
+		<script type="text/javascript" src="../assets/js/imprint.conf.js"></script>
+		<script type="text/javascript" src="../assets/js/imprint.min.js"></script>
+	</head>
+	<body>
+		<nav class="navbar navbar-default navbar-fixed-top primary" role="navigation">
+			<div class="container">
+				<a class="navbar-brand color-white padding-all-15px">
+					Dokter
+				</a>
+				<a id="btn-cari" class="navbar-brand pull-right color-white padding-tb-15px">
+					cari
+				</a>
+			</div>
+		</nav>
+		<nav class="navbar navbar-default navbar-fixed-top navbar-fixed-top-second" role="navigation">
+			<div class="container">
+				<a href="home.html" class="col-xs-3 navbar-brand padding-all-15px active">
+					<i class="typcn typcn-group-outline"></i>
+				</a>
+				<a href="antrian.html" class="col-xs-3 navbar-brand padding-all-15px">
+					<i class="typcn typcn-device-desktop"></i>
+				</a>
+				<a href="notif.html" class="col-xs-3 navbar-brand padding-all-15px">
+					<i class="typcn typcn-bell"></i>
+				</a>
+				<a href="lain.html" class="col-xs-3 navbar-brand padding-all-15px" >
+					<i class="typcn typcn-th-large-outline"></i>
+				</a>
+			</div>
+		</nav>
+		<div id="page" class="margin-top-100px" >
+			<div class="list-group padding-all-10px bottom-border" style="background:white; display:none">
+				<input type="text" class="form-control input-md" id="cari" placeholder="Kata pencarian..."/>
+				<select class="form-control input-md margin-tb-5px" id="order">
+					<option value=''>Urut berdasarkan</option>
+					<option value='r'>Rating (Tingi - Rendah)</option>
+					<option value='a'>Antrian (Padat - Lenggang)</option>
+				</select>
+				<div id="btn-tampil" class="btn primary form-control">Tampilkan</div>
+			</div>
+			<div id="place-for">
+				
+			</div>
+		</div>
+	</body>
+	<script>
+		var user = window.localStorage.getItem("user");
+			user = JSON.parse(user);
+		$(document).ready(function(){
+			init(false, true, false);
+			$('select').selectpicker();
+			
+			$("#btn-cari").click(function(){
+				if($("#cari").parent().is(':visible')){
+					$("#cari").parent().hide("slow", function(){
+						$(this).slideUp();
+					});
+				}else{
+					$("#cari").parent().show("slow", function(){
+						$("html, body").animate({ scrollTop: 0 }, "slow");
+						$(this).slideDown();
+					});
+				}
+			});
+			
+			$(window).keydown(function(e){
+				if(e.keyCode==13){
+					goCariDokter();
+				}
+			});
+			
+			$("#btn-tampil").click(function(){
+				goCariDokter();
+			});
+			
+			goCariDokter();
+		});
+		
+		function goCariDokter(){
+			$("#place-for").html('<img src="../assets/images/ajax-loader.gif" width="20px" style="margin-top:60%;margin-left:45%"/>');
+			
+			$("#btn-tampil").text('memproses..');
+			
+			var param 	= new Array();
+			param[0] 	= user['token'];//token
+			param[1] 	= user['userid'];//userid
+			param[2]	= window.localStorage.getItem("regid");//regid
+			param[3]	= $("#cari").val();
+			param[4]	= $("#order").val();
+			
+			var xhjr	= $.ajax({
+							data		: { f: 'searchdoctor', p: param },
+							dataType	: 'jsonp',
+							jsonp		: false,
+							url			: ws_host+"?callback=cbDoctor",
+							timeout		: ws_timeout
+						});
+			xhjr.error(function(xhr,status){
+				var arr_err = setErrorText(xhr, status);
+				
+				if(arr_err[0] == 1){
+					showWrong();
+				}
+			});
+		}
+		
+		function cbDoctor(data){
+			console.log("cbDoctor "+data);
+			$("#btn-tampil").text('Tampilkan');	
+			if(data[0] == 2)
+				goOut();
+			else if(data[0] == 1)
+				showWrong();
+			else
+				setHTML(data[2]);
+		}
+		
+		function setHTML(data){
+			var html = '';
+			
+			for(var i in data){
+				var dt = data[i];
+				
+				var photo = '../assets/images/doctor.jpg';
+				if(typeof dt['urlphoto'] != 'undefined' && dt['urlphoto'] != null)
+					photo = dt['urlphoto'];
+				var status = '(tersedia)';
+				if(typeof dt['islibur'] != 'undefined' && dt['islibur'] != null && dt['islibur'] !== "0")
+					status = '(libur)';
+				
+				html	+= '<div class="list-group padding-lr-10px padding-tb-5px col-xs-12">'+
+								'<a href="dokter.html?'+setToUrlParameter(dt, 'iddokter,nama,namajenis,rating,alamat_praktek,notelp,longi,lat,urlphoto,islibur,sekarang,banyakantrian,ratinguser')+'" class="list-group-item padding-all-5px color-black col-xs-12">'+
+									'<div class="col-xs-3 padding-all-5px">'+
+										'<img src="'+photo+'" class="img-circle"  style="width:70px"/>'+
+									'</div>'+
+									'<div class="col-xs-9 padding-all-0px padding-lr-10px">'+
+										'<span class="col-xs-12 color-primary text-uppercase">'+
+											'<b id="namadokter">'+dt['nama']+'</b>'+
+										'</span>'+
+										'<span class="col-xs-12">'+
+											dt['namajenis']+
+										'</span>'+
+										'<span class="col-xs-12 color-primary">'+
+											htmlRating(dt['rating'])+
+										'</span>'+
+										'<span class="col-xs-12">'+
+											dt['alamat_praktek']+
+										'</span>'+
+										'<span class="col-xs-12">'+
+											status+' '+dt['sekarang']+'/'+dt['banyakantrian']+
+										'</span>'+
+									'</div>'+
+								'</a>'+
+							'</div>';
+			}
+			$("#place-for").html(html);
+		}
+		
+		function showWrong(){
+			$("#btn-tampil").text('Tampilkan');
+			$("#place-for").html('<div style="margin-top:50%" class="text-center" onclick="goCariDokter();"><h1><i class="typcn typcn-refresh-outline"></i></h1><br/>Tap untuk menyegarkan</div>');
+		}
+	</script>
+</html>

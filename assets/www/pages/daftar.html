@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+		<!-- Bootstrap core CSS -->
+		<link href="../assets/css/bootstrap.min.css" rel="stylesheet">
+		<!-- Custom styles for this apps -->
+		<link href="../assets/css/imprint.min.css" rel="stylesheet">
+		<link href="../assets/css/typicons.min.css" rel="stylesheet">
+		<!-- Core JS -->
+		<script type="text/javascript" src="../assets/js/jquery.min.js"></script>
+		<script type="text/javascript" src="../assets/js/bootstrap.min.js"></script>
+		<!-- FastClick -->
+		<script type="text/javascript" src="../assets/js/fastclick.js"></script>
+		<script type="application/javascript">
+			$(function() {
+				FastClick.attach(document.body);
+			});
+		</script>
+		<!-- Select Picker Plugin -->
+		<link href="../assets/css/bootstrap-select.css" rel="stylesheet">
+		<link href="../assets/css/bootstrap-select.min.css" rel="stylesheet">
+		<script type="text/javascript" src="../assets/js/bootstrap-select.js"></script>
+		<script type="text/javascript" src="../assets/js/bootstrap-select.min.js"></script>
+		<!-- Core Cordova -->
+		<script type="text/javascript" src="../assets/js/cordova-2.7.0.js"></script>
+		<script type="text/javascript" src="../assets/js/PushNotification.js"></script>
+		<script type="text/javascript" src="../assets/js/imprint.conf.js"></script>
+		<script type="text/javascript" src="../assets/js/imprint.min.js"></script>
+	</head>
+	<body class="body-signin">
+		<div class="container">
+			<form class="form-signin">
+				<h1 class="form-signin-heading">
+					<img src="../assets/images/logo.png"/>
+				</h1>
+				<h4>
+					Daftarkan akun gratis. Tingkatkan pelayanan kesehatan Anda melalui IMPRINT.
+				</h4>
+				<div class="margin-tb-5px margin-top-20px"></div>
+				<div class="margin-tb-5px alert" style="display:none"></div>
+				<div class="margin-tb-5px">
+					<label for="inputEmail" class="sr-only">Nomor Hp</label>
+					<input type="text" id="nohp" class="form-control input-md" placeholder="No Hp"autofocus>
+				</div>
+				<div class="margin-tb-5px">
+					<label for="inputPassword" class="sr-only">Password</label>
+					<input type="password" id="password" class="form-control input-md" placeholder="Password">
+				</div>
+				<div class="margin-tb-5px">
+					<label for="inputPassword" class="sr-only">Konfirmasi Password</label>
+					<input type="password" id="confPassword" class="form-control input-md" placeholder="Konfirmasi Password">
+				</div>
+				<div class="margin-tb-5px">
+					<label for="inputEmail" class="sr-only">Nama Lengkap</label>
+					<input type="email" id="nama" class="form-control input-md" placeholder="Nama Lengkap">
+				</div>
+				<div class="margin-tb-5px">
+					<label for="inputEmail" class="sr-only">Daftar Sebagai</label>
+					<select class="form-control input-md selectpicker" id="level">
+						<option value="1">Pasien</option>
+						<option value="2">Dokter</option>
+					</select>
+				</div>
+				<div class="btn btn-md primary btn-block" id="btn-daftar">D A F T A R</div>
+				<a href="konfirmasi.html">
+					<div class="btn btn-md primary btn-block margin-top-20px" type="submit">K O N F I R M A S I</div>
+				</a>
+			</form>
+		</div>
+	</body>
+	<script>
+		$(document).ready(function(){
+			$('select').selectpicker();
+			init();
+			
+			$("#btn-daftar").click(function(){
+				$(".alert").hide();
+				$(this).text("Memproses...");
+				goDaftar();
+			});
+			
+			$("#nohp").keyup(function(e){
+				var x = onlyNumber($(this));
+				if(!x)
+					showWrong("Field hanya dapat diisikan dengan angka");
+				else
+					$(".alert").hide();
+			});
+		});
+		
+		/* Mendaftarkan user */
+		
+		function goDaftar(){
+			var required = "nohp,password,confPassword,nama,level";
+			var err = false;
+			var msg = '';
+			
+			if(cekRequired(required)){
+				
+				//cek kesamaan pass dan konfirmasi
+				if($("#password").val() != $("#confPassword").val()){
+					err = true;
+					msg = "Password yang Anda inputkan berbeda";
+				}
+				//cek panjang nomor
+				else if($("#nohp").val().length < 11 || $("#nohp").val().length > 12){
+					alert($("#nohp").length)
+					err = true;
+					msg = "Mohon periksa kembali nomor Hp Anda";
+				}
+				//cek panjang password
+				else if($("#password").val().length < 6){
+					err = true;
+					msg = "Password minimal 6 karakter";
+				}
+				else{
+					var param 	= new Array();
+					param[0] 	= $("#nohp").val();//notelp
+					param[1] 	= $("#password").val();//password
+					param[2]	= $("#nama").val();//nama
+					param[3]	= $("#level").val();//idlevel
+					
+					var xhjr	= $.ajax({
+									data		: { f: 'register', p: param },
+									dataType	: 'jsonp',
+									jsonp		: false,
+									url			: ws_host+"?callback=cbReg",
+									timeout		: ws_timeout
+								});
+					
+					xhjr.error(function(xhr,status){
+						err = true;
+						msg = status;
+					});
+				}
+			}
+			else{
+				err = true;
+				msg = "Lengkapi data yang dibutuhkan";
+			}
+			
+			if(err){
+				showWrong(msg);
+			}
+		}
+		
+		function cbReg(data){
+			if(data[0] == 1){
+				showWrong(data[1]);
+			}
+			else
+				location.href = "konfirmasi.html";
+		}
+		
+		/* End mendaftarkan user */
+		
+		function showWrong(msg){
+			$(".alert").show();
+			$(".alert").addClass('alert-danger');
+			$(".alert").removeClass('alert-success');
+			$(".alert").text(msg);
+			$("#btn-daftar").text("D A F T A R");
+		}
+	</script>
+</html>

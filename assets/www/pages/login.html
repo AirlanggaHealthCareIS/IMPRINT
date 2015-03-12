@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- Bootstrap core CSS -->
+		<link href="../assets/css/bootstrap.min.css" rel="stylesheet">
+		<!-- Custom styles for this apps -->
+		<link href="../assets/css/imprint.min.css" rel="stylesheet">
+		<link href="../assets/css/typicons.min.css" rel="stylesheet">
+		<!-- Core JS -->
+		<script type="text/javascript" src="../assets/js/jquery.min.js"></script>
+		<script type="text/javascript" src="../assets/js/bootstrap.min.js"></script>
+		<!-- FastClick -->
+		<script type="text/javascript" src="../assets/js/fastclick.js"></script>
+		<script type="application/javascript">
+			$(function() {
+				FastClick.attach(document.body);
+			});
+		</script>
+		<!-- Core Cordova -->
+		<script type="text/javascript" src="../assets/js/cordova-2.7.0.js"></script>
+		<script type="text/javascript" src="../assets/js/PushNotification.js"></script>
+		<script type="text/javascript" src="../assets/js/imprint.conf.js"></script>
+		<script type="text/javascript" src="../assets/js/imprint.min.js"></script>
+	</head>
+	<body class="body-signin">
+		<div class="container">
+			<form class="form-signin">
+				<h1 class="form-signin-heading">
+					<img src="../assets/images/logo.png"/>
+				</h1>
+				<h4>
+					Selamat datang di imprint. Silakan login menggunakan akun Anda.
+				</h4>
+				<div class="margin-tb-5px margin-top-50px"></div>
+				<div class="margin-tb-5px alert" style="display:none"></div>
+				<div class="margin-tb-5px">
+					<label for="inputEmail" class="sr-only">Nomor Hp</label>
+					<input type="text" id="nohp" class="form-control input-md" placeholder="No. Hp" autofocus>
+				</div>
+				<div class="margin-tb-5px">
+					<label for="inputPassword" class="sr-only">Password</label>
+					<input type="password" id="password" class="form-control input-md" placeholder="Password">
+				</div>
+				<div class="btn btn-md primary btn-block margin-tb-5px" id="btn-masuk">M A S U K</div>
+				<div class="margin-tb-5px">
+					Belum memiliki akun ?
+				</div>
+				<a href="daftar.html">
+					<div class="btn btn-md primary btn-block margin-tb-5px">D A F T A R</div>
+				</a>
+				<div class="margin-tb-5px">
+					Lupa password ?
+				</div>
+				<a href="lupapassword.html">
+					<div class="btn btn-md primary btn-block margin-tb-5px">R E S E T</div>
+				</a>
+			</form>
+		</div>
+	</body>
+	<script>
+		$(document).ready(function(){
+			$("#btn-masuk").click(function(){
+				$(".alert").hide();
+				$(this).text("Mendaftarkan perangkat...");
+				
+				var required = "nohp,password";
+				
+				if(cekRequired(required)){
+					init(true,true,true);
+				}
+				else{
+					showWrong("Lengkapi data yang dibutuhkan");
+				}
+			});			
+		});
+		
+		/* Otentikasi user */
+		
+		function login(regid){
+			var param 	= new Array();
+			param[0] 	= $("#nohp").val();//notelp
+			param[1] 	= $("#password").val();//password
+			param[2]	= regid;//regid
+			
+			var xhjr	= $.ajax({
+							data		: { f: 'login', p: param },
+							dataType	: 'jsonp',
+							jsonp		: false,
+							url			: ws_host+"?callback=cbLogin",
+							timeout		: ws_timeout
+						});
+			
+			xhjr.error(function(xhr,status){
+				var arr_err = setErrorText(xhr, status);
+				
+				if(arr_err[0] == 1)
+					showWrong(arr_err[1]);
+			});
+		}
+		
+		function cbLogin(data){
+			if(data[0] == 1)
+				showWrong(data[1]);
+			else{
+				window.localStorage.setItem("user", JSON.stringify(data[2]));
+				window.localStorage.setItem("url-foto", data[3]);
+				location.href = "home.html";
+			}
+		}
+		
+		/* End Otentikasi user */
+		
+		function showWrong(msg){
+			$(".alert").show();
+			$(".alert").addClass('alert-danger');
+			$(".alert").removeClass('alert-success');
+			$(".alert").text(msg);
+			$("#btn-masuk").text("M A S U K");
+		}
+	</script>
+</html>

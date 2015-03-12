@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en" style="width:100%;height:100%">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- Bootstrap core CSS -->
+		<link href="../assets/css/bootstrap.min.css" rel="stylesheet">
+		<!-- Custom styles for this apps -->
+		<link href="../assets/css/imprint.min.css" rel="stylesheet">
+		<link href="../assets/css/typicons.min.css" rel="stylesheet">
+		<!-- Core JS -->
+		<script type="text/javascript" src="../assets/js/jquery.min.js"></script>
+		<script type="text/javascript" src="../assets/js/bootstrap.min.js"></script>
+		<!-- FastClick -->
+		<script type="text/javascript" src="../assets/js/fastclick.js"></script>
+		<script type="application/javascript">
+			$(function() {
+				FastClick.attach(document.body);
+			});
+		</script>
+		<!-- Core Cordova -->
+		<script type="text/javascript" src="../assets/js/cordova-2.7.0.js"></script>
+		<script type="text/javascript" src="../assets/js/PushNotification.js"></script>
+		<script type="text/javascript" src="../assets/js/imprint.conf.js"></script>
+		<script type="text/javascript" src="../assets/js/imprint.min.js"></script>
+		<!-- Map Plugin -->
+		<script src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
+		<script type="text/javascript" src="../assets/js/jquery-gmaps-latlon-picker.js"></script>
+		<link href="../assets/css/jquery-gmaps-latlon-picker.css" rel="stylesheet">
+		
+	</head>
+	<body style="width:100%;height:100%">
+		<nav class="navbar navbar-default navbar-fixed-top primary" role="navigation">
+			<div class="container">
+				<div class="navbar-header">
+					<a href="profil.html" class="navbar-brand color-white padding-tb-15px">
+						<i class="typcn typcn-chevron-left"></i>
+					</a>
+					<a class="navbar-brand color-white padding-all-15px">
+						Lokasi Praktek
+					</a>
+					<a id="btn-proses" class="navbar-brand pull-right color-white padding-tb-15px">
+						simpan
+					</a>
+				</div>
+			</div>
+		</nav>
+		<div id="page" class="margin-top-50px"  style="width:100%;height:100%">
+			<fieldset class="gllpLatlonPicker"  style="width:100%;height:100%">
+				<input type="text" placeholder="cari lokasi praktek anda" class="gllpSearchField form-control input-md" style="position: absolute;z-index: 99;width: 96%;margin-left: 2% !important;top: 60px;">
+				<input id="btn-cari" type="button" class="gllpSearchButton" value="search"  style="display:none">
+				<div class="gllpMap" style="width:100%;height:100%" >Google Maps</div>
+				<input type="text" id="ipt-long" class="gllpLatitude" value="-7.278134" style="display:none"/>
+				<input type="text" id="ipt-lat" class="gllpLongitude" value="112.706212" style="display:none"/>
+				<input type="text" class="gllpZoom" value="15" style="display:none"/>
+				<input type="button" id="btn-update" class="gllpUpdateButton" value="update map" style="display:none">
+				<div id="btn-focus" class="btn primary" style="position: absolute;z-index: 99; bottom: 10px; right:10px"><i class="glyphicon glyphicon-screenshot"></i></div>
+			</fieldset>
+		</div>
+	</body>
+	<script>
+		var user = window.localStorage.getItem("user");
+			user = JSON.parse(user);
+		$(document).ready(function(){
+			init(false, true, false, true);
+			
+			$(window).keydown(function(e){
+				if(e.keyCode==13){
+					$("#btn-cari").trigger('click');
+				}
+			});
+			
+			$("#btn-proses").click(function(){
+				goSaveLokasi();
+			});
+			
+			$("#btn-focus").click(function(){
+				if(typeof longitude != 'undefined' && longitude != null && typeof latitude != 'undefined' && latitude != null ){
+					$("#ipt-long").val(longitude);
+					$("#ipt-lat").val(latitude);
+					$("#btn-update").trigger('click');
+				}
+				else{
+					alert("Lokasi Anda belum terdeteksi. Silakan ulangi beberapa saat.")
+				}
+			});
+		});
+		
+		function goSaveLokasi(){
+			$("#btn-proses").html('<img src="../assets/images/ajax-loader(2).gif" width="20px"/>');
+		
+			var param 	= new Array();
+			param[0] 	= user['token'];//token
+			param[1] 	= user['userid'];//userid
+			param[2]	= window.localStorage.getItem("regid");//regid
+			param[11]	= $("#ipt-long").val();//longitude
+			param[12]	= $("#ipt-lat").val();//latitude
+			
+			var xhjr	= $.ajax({
+							data		: { f: 'updateprofile', p: param },
+							dataType	: 'jsonp',
+							jsonp		: false,
+							url			: ws_host+"?callback=cbUpdateProfile",
+							timeout		: ws_timeout
+						});
+			xhjr.error(function(xhr,status){
+				var arr_err = setErrorText(xhr, status);
+				
+				if(arr_err[0] == 1){
+					$("#btn-proses").text("simpan");
+					alert(arr_err[1]);
+				}
+			});
+		}
+		
+		function cbUpdateProfile(data){
+			if(data[0] == 2)
+				goOut();
+			else{
+				if(data[0] == 0){
+					window.localStorage.setItem("user",JSON.stringify(data[2]));
+				}
+				
+				$("#btn-proses").text("simpan");
+			}
+		}
+	</script>
+</html>

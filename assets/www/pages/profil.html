@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- Bootstrap core CSS -->
+		<link href="../assets/css/bootstrap.min.css" rel="stylesheet">
+		<!-- Custom styles for this apps -->
+		<link href="../assets/css/imprint.min.css" rel="stylesheet">
+		<link href="../assets/css/typicons.min.css" rel="stylesheet">
+		<!-- Core JS -->
+		<script type="text/javascript" src="../assets/js/jquery.min.js"></script>
+		<script type="text/javascript" src="../assets/js/bootstrap.min.js"></script>
+		<!-- FastClick -->
+		<script type="text/javascript" src="../assets/js/fastclick.js"></script>
+		<script type="application/javascript">
+			$(function() {
+				FastClick.attach(document.body);
+			});
+		</script>
+		<!-- Select Picker Plugin -->
+		<link href="../assets/css/bootstrap-select.css" rel="stylesheet">
+		<link href="../assets/css/bootstrap-select.min.css" rel="stylesheet">
+		<script type="text/javascript" src="../assets/js/bootstrap-select.js"></script>
+		<script type="text/javascript" src="../assets/js/bootstrap-select.min.js"></script>
+		<!-- Core Cordova -->
+		<script type="text/javascript" src="../assets/js/cordova-2.7.0.js"></script>
+		<script type="text/javascript" src="../assets/js/PushNotification.js"></script>
+		<script type="text/javascript" src="../assets/js/imprint.conf.js"></script>
+		<script type="text/javascript" src="../assets/js/imprint.min.js"></script>
+	</head>
+	<body>
+		<nav class="navbar navbar-default navbar-fixed-top primary" role="navigation" style="border:none">
+			<div class="container">
+				<div class="navbar-header">
+					<a href="lain.html" class="navbar-brand color-white padding-tb-15px">
+						<i class="typcn typcn-chevron-left"></i>
+					</a>
+					<a class="navbar-brand color-white padding-all-15px">
+						Profil Anda
+					</a>
+					<a class="t_btn navbar-brand pull-right color-white padding-tb-15px">
+						edit
+					</a>
+				</div>
+			</div>
+		</nav>
+		<div id="page" class="margin-top-50px">
+			<div class="modal fade" id="photoDialog" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-body border-bottom" onclick="capturePhotoEdit();">
+							Ambil foto dengan kamera
+						</div>
+						<div class="modal-body" onclick="getPhoto(pictureSource.PHOTOLIBRARY);">
+							Gunakan foto di galeri
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-xs-12 padding-all-20px bg-profil border-bottom color-white">
+				<div class="col-xs-4" style="height:70px" data-toggle="modal" data-target="#photoDialog">
+					<img src="../assets/images/pasien.jpg" class="img-circle user-pic"  style="width:70px;height:70px" />
+					<div id="photo-progress" class="icon-fly"><i class="typcn typcn-camera-outline"></i></div>
+				</div>
+				<div class="data col-xs-8 padding-all-0px">
+					<span class="col-xs-12 padding-all-0px text-uppercase" id="nama"></span>
+					<!-- dokter only -->
+					<div class="data-dokter" style="display:none">
+						<span class="col-xs-12 padding-all-0px" id="nip"></span>
+						<span class="col-xs-12 padding-all-0px" id="spesialis-dokter"></span>
+						<span class="col-xs-12 padding-all-0px" id="rating-dokter"></span>
+					</div>
+					 <!---->
+				</div>
+				<div class="edit col-xs-8 padding-all-0px" style="display:none">
+					<input type="text" id="nama" class="form-control input-md" placeholder="Nama"/>	
+					<!-- dokter only -->
+					<div class="data-dokter" style="display:none">
+						<input type="text" id="nip" class="form-control input-md margin-tb-5px" placeholder="NIP"/>	
+						<select class="form-control input-md margin-tb-5px" id="spesialis-dokter"></select>
+						<span class="col-xs-12 padding-all-0px" id="rating-dokter"></span>
+					</div>
+					<!---->
+				</div>
+			</div>
+			<div class="col-xs-12 padding-all-0px">
+				<div class="data">
+					<div class="data-dokter list-group padding-lr-10px padding-tb-5px" style="display:none">
+						<div class="list-group-item color-black padding-all-5px" style="height:210px">
+							<div class="col-xs-12 padding-all-5px alert alert-info">
+								Agar memudahkan pencarian pasien, lengkapilah alamat praktek Anda dengan rinci seperti kelurahan, kecamatan serta kota.
+							</div>
+							<div class="col-xs-4 padding-all-5px text-center">
+								<i class="typcn typcn-location-arrow-outline"></i> Alamat Praktek
+							</div>
+							<div class="col-xs-8 padding-all-5px word-wrap" id="alamat-praktek">
+							</div>
+						</div>
+						<div class="list-group-item color-black padding-all-5px" style="height:65px">
+							<div class="col-xs-4 padding-all-5px text-center">
+								<i class="typcn typcn-location-outline"></i>Lokasi Praktek
+							</div>
+							<div class="col-xs-8 padding-all-5px">
+								<span id="lokasi-praktek"></span>
+								<a href="peta.html" class="btn btn-xs primary">Peta</a>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="edit" style="display:none">
+					<div class="data-dokter edit list-group padding-lr-10px padding-tb-5px" >
+						<div class="list-group-item color-black padding-all-5px" style="height:300px">
+							<div class="col-xs-12 padding-all-5px alert alert-info">
+								Agar memudahkan pencarian pasien, lengkapilah alamat praktek Anda dengan rinci seperti kelurahan, kecamatan serta kota.
+							</div>
+							<div class="col-xs-4 padding-all-5px text-center">
+								<i class="typcn typcn-location-arrow-outline"></i> Alamat Praktek
+							</div>
+							<div class="col-xs-8 padding-all-5px word-wrap">
+								<textArea class="form-control input-md" style="height:190px" placeholder="Alamat Lengkap" id="alamat-praktek"></textArea>
+							</div>
+						</div>
+						<div class="list-group-item color-black padding-all-5px" style="height:65px">
+							<div class="col-xs-4 padding-all-5px text-center">
+								<i class="typcn typcn-location-outline"></i>Lokasi Praktek
+							</div>
+							<div class="col-xs-8 padding-all-5px">
+								<span id="lokasi-praktek"></span>
+								<a href="peta.html" class="btn btn-xs primary">Peta</a>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="data">
+					<div class="list-group padding-lr-10px padding-tb-5px">
+						<div class="list-group-item color-black padding-all-5px" style="height:40px">
+							<div class="col-xs-4 padding-all-5px text-center">
+								<i class="typcn typcn-phone-outline"></i> No Telp
+							</div>
+							<div class="col-xs-8 padding-all-5px word-wrap" id="telp-pribadi">
+							</div>
+						</div>
+						<div class="list-group-item color-black padding-all-5px" style="height:120px">
+							<div class="col-xs-4 padding-all-5px text-center">
+								<i class="typcn typcn-location-arrow-outline"></i> Alamat Lengkap
+							</div>
+							<div class="col-xs-8 padding-all-5px word-wrap" id="alamat-pribadi">
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="edit" style="display:none">
+					<div class="list-group padding-lr-10px padding-tb-5px" >
+						<div class="list-group-item color-black padding-all-5px" style="height:55px">
+							<div class="col-xs-4 padding-all-5px text-center">
+								<i class="typcn typcn-phone-outline"></i> No Telp
+							</div>
+							<div class="col-xs-8 padding-all-5px word-wrap">
+								<input type="text" id="telp-pribadi" class="form-control input-md" placeholder="No Telp" >	
+							</div>
+						</div>
+						<div class="list-group-item color-black padding-all-5px" style="height:210px">
+							<div class="col-xs-4 padding-all-5px text-center">
+								<i class="typcn typcn-location-arrow-outline"></i> Alamat Lengkap
+							</div>
+							<div class="col-xs-8 padding-all-5px word-wrap">
+								<textArea class="form-control input-md" style="height:190px" placeholder="Alamat" id="alamat-pribadi"></textArea>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script>
+			var user = window.localStorage.getItem("user");
+				user = JSON.parse(user);
+			$(document).ready(function(){
+				init(false,true,false);
+				$('select').selectpicker();
+				$(".t_btn").click(function(){
+					if($(this).text() == 'simpan'){
+						$(".t_btn").html('<img src="../assets/images/ajax-loader(2).gif" width="20px"/>');
+						goUpdateProfile();
+					}else{
+						$(".data").hide();
+						$(".edit").show();
+						if(user['idlevel'] == 2)
+							$(".edit .data-dokter").show();
+						else
+							$(".edit .data-dokter").hide();
+						$(".t_btn").text('simpan');
+					}
+				});
+				
+				//combo-box jenis pelayanan
+				var p1 	= new Array();
+				p1[0]	= user['token'];//token
+				p1[1]	= user['userid'];//userid
+				p1[2]	= window.localStorage.getItem("regid");
+				getJenisPelayanan('.edit #spesialis-dokter', p1, user['idjenis']);
+				
+				/* SET VALUE */
+				setHTML(user,window.localStorage.getItem("url-foto"));
+				
+			});
+			
+			function goUpdateProfile(){
+				
+				var param 	= new Array();
+				param[0] 	= user['token'];//token
+				param[1] 	= user['userid'];//userid
+				param[2]	= window.localStorage.getItem("regid");//regid
+				param[7]	= $(".edit #nama").val();//nama
+				param[8]	= $(".edit #alamat-pribadi").val();//alamat
+				param[9]	= $(".edit #nip").val();//nip
+				param[10]	= $(".edit #spesialis-dokter").val();//idjenis
+				param[13]	= $(".edit #alamat-praktek").val();//alamat praktek
+				
+				var xhjr	= $.ajax({
+								data		: { f: 'updateprofile', p: param },
+								dataType	: 'jsonp',
+								jsonp		: false,
+								url			: ws_host+"?callback=cbUpdateProfile",
+								timeout		: ws_timeout
+							});
+				xhjr.error(function(xhr,status){
+					$(".t_btn").text("edit");
+					$(".t_btn").removeClass('inf-rotation');
+					
+					var arr_err = setErrorText(xhr, status);
+					
+					if(arr_err[0] == 1){
+						$(".t_btn").text("simpan");
+						alert(arr_err[1]);
+					}
+				});
+			}
+			
+			function cbUpdateProfile(data){
+				
+				if(data[0] == 2)
+					goOut();
+				else{
+					if(data[0] == 0){
+						window.localStorage.setItem("user",JSON.stringify(data[2]));
+						setHTML(data[2],window.localStorage.getItem("url-foto"));
+					}
+					
+					$(".t_btn").text("edit");
+					$(".t_btn").removeClass('inf-rotation');
+					$(".data").show();
+					$(".edit").hide();
+				}
+			}
+			
+			function setHTML(user, url_foto){
+				//foto
+				
+				if(url_foto !== 'null'){
+					$(".user-pic").attr('src',url_foto);
+				}else{
+					if(user['idlevel'] == 2)
+						$(".user-pic").attr('src','../assets/images/doctor.jpg');
+				}
+				
+				//nama
+				$(".data #nama").text(user['nama']);
+				$(".edit #nama").val(user['nama']);
+				
+				//NIP
+				$(".data #nip").text(user['nip']);
+				$(".edit #nip").val(user['nip']);
+				
+				//jenis pelayanan
+				if(typeof user['namajenis'] == 'undefined' || user['namajenis'] == null)
+					$(".data #spesialis-dokter").hide();
+				$(".data #spesialis-dokter").text(user['namajenis']);
+				$(".edit #spesialis-dokter").val(user['idjenis']);
+				$(".edit #spesialis-dokter").selectpicker('refresh');
+				
+				//rating
+				var rating 	= user['rating'];
+				var htmlrtg	= htmlRating(rating);
+				$(".edit #rating-dokter, .data #rating-dokter").html(htmlrtg);		
+
+				//alamat praktek
+				var alamat_praktek = '';
+				if(typeof user['alamat_praktek'] != 'undefined' && user['alamat_praktek'] != null)
+					alamat_praktek	+= user['alamat_praktek'];
+				if(alamat_praktek == '')
+					alamat_praktek = '-';
+				$(".data #alamat-praktek").text(alamat_praktek);
+				$(".edit #alamat-praktek").val(alamat_praktek);
+				
+				//lokasi praktek
+				var	lokasi_praktek = '';
+				if(typeof user['longi'] != 'undefined' && user['longi'] != null)
+					lokasi_praktek += user['longi'];
+				if(typeof user['lat'] != 'undefined' && user['lat'] != null)
+					lokasi_praktek += ' , '+user['lat'];
+				if(lokasi_praktek == '')
+					lokasi_praktek = '-';
+				$(".data #lokasi-praktek, .edit #lokasi-praktek").text('('+lokasi_praktek+')');
+				
+				//nomor telp
+				$(".data #telp-pribadi").text(user['notelp']);
+				$(".edit #telp-pribadi").val(user['notelp']);
+				
+				//alamat pribadi
+				var alamat_pribadi = '';
+				if(typeof user['alamatuser'] != 'undefined' && user['alamatuser'] != null)
+					alamat_pribadi	+= user['alamatuser'];
+				if(alamat_pribadi == '')
+					alamat_pribadi = '-';
+				$(".data #alamat-pribadi").text(alamat_pribadi);
+				$(".edit #alamat-pribadi").val(alamat_pribadi);
+				
+				if(user['idlevel'] == 2)
+					$('.data .data-dokter').show();
+				else
+					$('.data-dokter').hide();
+			}
+			
+		</script>
+	</body>
+</html>

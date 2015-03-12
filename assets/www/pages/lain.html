@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- Bootstrap core CSS -->
+		<link href="../assets/css/bootstrap.min.css" rel="stylesheet">
+		<!-- Custom styles for this apps -->
+		<link href="../assets/css/imprint.min.css" rel="stylesheet">
+		<link href="../assets/css/typicons.min.css" rel="stylesheet">
+		<!-- Core JS -->
+		<script type="text/javascript" src="../assets/js/jquery.min.js"></script>
+		<script type="text/javascript" src="../assets/js/bootstrap.min.js"></script>
+		<!-- FastClick -->
+		<script type="text/javascript" src="../assets/js/fastclick.js"></script>
+		<script type="application/javascript">
+			$(function() {
+				FastClick.attach(document.body);
+			});
+		</script>
+		<!-- Select Picker Plugin -->
+		<link href="../assets/css/bootstrap-select.css" rel="stylesheet">
+		<link href="../assets/css/bootstrap-select.min.css" rel="stylesheet">
+		<script type="text/javascript" src="../assets/js/bootstrap-select.js"></script>
+		<script type="text/javascript" src="../assets/js/bootstrap-select.min.js"></script>
+		<!-- Core Cordova -->
+		<script type="text/javascript" src="../assets/js/cordova-2.7.0.js"></script>
+		<script type="text/javascript" src="../assets/js/PushNotification.js"></script>
+		<script type="text/javascript" src="../assets/js/imprint.conf.js"></script>
+		<script type="text/javascript" src="../assets/js/imprint.min.js"></script>
+	</head>
+	<body>
+		<nav class="navbar navbar-default navbar-fixed-top primary" role="navigation">
+			<div class="container">
+				<div class="navbar-header">
+					<a class="navbar-brand color-white padding-all-15px">
+						Lainnya
+					</a>
+					<a class="t_btn navbar-brand pull-right color-white padding-tb-15px">
+						simpan
+					</a>
+				</div>
+			</div>
+		</nav>
+		<nav class="navbar navbar-default navbar-fixed-top navbar-fixed-top-second" role="navigation">
+			<div class="container">
+				<a href="home.html" class="col-xs-3 navbar-brand padding-all-15px">
+					<i class="typcn typcn-group-outline"></i>
+				</a>
+				<a href="antrian.html" class="col-xs-3 navbar-brand padding-all-15px">
+					<i class="typcn typcn-device-desktop"></i>
+				</a>
+				<a href="notif.html" class="col-xs-3 navbar-brand padding-all-15px">
+					<i class="typcn typcn-bell"></i>
+				</a>
+				<a href="lain.html" class="col-xs-3 navbar-brand padding-all-15px active" >
+					<i class="typcn typcn-th-large-outline"></i>
+				</a>
+			</div>
+		</nav>
+		<div id="page" class="margin-top-100px">
+			<div class="modal fade" id="aboutDialog" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-body">
+							<i class="typcn typcn-ticket"></i> IMPRINT<br/>
+							Versi beta 0.02.15.1<br/>
+							<br/>
+							Hak cipta 2014 Universitas Airlangga. 
+							Semua Hak dilindungi. 
+							Produk ini menggunakan berbagai macam perangkat lunak sumber terbuka.<br/>
+							<br/>
+							Produk ini dibuat sebagai syarat untuk memeroleh gelar S.Kom. <br/>
+							<br/>
+							KREDIT <br/>
+							081016001 - Nur Maulidiyah<br/>
+							Prodi S1 Sistem Informasi<br/>
+							Fakultas Sains dan Teknologi Universias Airlangga<br/>
+							nur.maulidiyah20@yahoo.co.id<br/>
+							085733781775<br/>
+							<br/>
+							DUKUNGAN <br/>
+							Indra Kharisma Raharjana - Pembimbing I<br/>
+							Indah Werdiningsing - Pembimbing II<br/> 
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="list-group padding-lr-10px padding-tb-5px">
+				<a href="profil.html" class="list-group-item color-black padding-all-5px" style="height:60px">
+					<div class="col-xs-3 padding-all-0px text-center">
+						<img src="../assets/images/pasien.jpg" class="img-circle"  style="width:50px;height:50px" />
+					</div>
+					<div class="col-xs-9 padding-all-0px">
+						<span id="nama"></span></br>
+						<small>Lihat Profil Anda</small>
+					</div>
+				</a>
+			</div>
+			<div class="list-group padding-lr-10px padding-tb-5px" id="fitur-dokter" style="display:none">
+				<a class="list-group-item color-black padding-all-5px" style="height:55px" href="keluhan.html">
+					<div class="col-xs-2 padding-all-5px text-center">
+						<div class="thumbnail-icon"><i class="typcn typcn-sort-alphabetically-outline"></i></div>
+					</div>
+					<div class="col-xs-9 padding-all-10px">
+						Daftar Keluhan
+					</div>
+					<div class="col-xs-1 padding-all-10px">
+						<i class="typcn typcn-chevron-right"></i>
+					</div>
+				</a>
+				<a class="list-group-item color-black padding-all-5px" style="height:55px" href="jadwal.html">
+					<div class="col-xs-2 padding-all-5px text-center">
+						<div class="thumbnail-icon"><i class="typcn typcn-calendar-outline"></i></div>
+					</div>
+					<div class="col-xs-9 padding-all-10px">
+						Jadwal Praktek
+					</div>
+					<div class="col-xs-1 padding-all-10px">
+						<i class="typcn typcn-chevron-right"></i>
+					</div>
+				</a>
+				<a class="list-group-item color-black padding-all-5px" style="height:55px" href="libur.html">
+					<div class="col-xs-2 padding-all-5px text-center">
+						<div class="thumbnail-icon"><i class="typcn typcn-calendar-outline"></i></div>
+					</div>
+					<div class="col-xs-9 padding-all-10px">
+						Daftar Hari Libur
+					</div>
+					<div class="col-xs-1 padding-all-10px">
+						<i class="typcn typcn-chevron-right"></i>
+					</div>
+				</a>
+				<a class="list-group-item color-black padding-all-5px" style="height:55px" href="dashboard.html">
+					<div class="col-xs-2 padding-all-5px text-center">
+						<div class="thumbnail-icon"><i class="typcn typcn-chart-pie-outline"></i></div>
+					</div>
+					<div class="col-xs-9 padding-all-10px">
+						Dashboard
+					</div>
+					<div class="col-xs-1 padding-all-10px">
+						<i class="typcn typcn-chevron-right"></i>
+					</div>
+				</a>
+				<a class="list-group-item color-black padding-all-5px" style="height:55px" >
+					<div class="col-xs-2 padding-all-5px text-center">
+						<div class="thumbnail-icon"><i class="typcn typcn-stopwatch"></i></div>
+					</div>
+					<div class="col-xs-6 padding-all-5px">
+						Pelayanan
+					</div>
+					<div class="col-xs-4 padding-all-5px">
+						<input type="text" id="ipt-lama" class="form-control input-md" placeholder="5" />
+					</div>
+				</a>
+				<a class="list-group-item color-black padding-all-5px" style="height:55px" >
+					<div class="col-xs-2 padding-all-5px text-center">
+						<div class="thumbnail-icon"><i class="typcn typcn-arrow-repeat-outline"></i></div>
+					</div>
+					<div class="col-xs-10 padding-all-5px">
+						<div class="col-xs-10 padding-all-0px">
+							<select id="ipt-terlambat" class="form-control input-md" >
+								<option value="">Atur pasien kembali</option>
+								<option value="F">Kembalikan ke awal</option>
+								<option value="L">Kembalikan ke akhir</option>
+								<option value="M">Atur urutan</option>
+							</select>
+						</div>
+						<div class="col-xs-2 padding-all-0px">
+							<input type="text" id="ipt-m" class="form-control input-md" style="display:none" placeholder="2"/>
+						</div>
+					</div>
+				</a>
+			</div>
+			<div class="list-group padding-lr-10px padding-tb-5px">
+				<div class="list-group-item color-black padding-all-5px" style="height:55px">
+					<div class="col-xs-2 padding-all-5px text-center">
+						<div class="thumbnail-icon"><i class="typcn typcn-phone-outline"></i></div>
+					</div>
+					<div class="col-xs-9 padding-all-10px">
+						Tampilkan Nomor Telp
+					</div>
+					<div class="col-xs-1 padding-all-10px">
+						<input id="show-phone" type="checkbox" class="form-control"/>
+					</div>
+				</div>
+				<div class="list-group-item color-black padding-all-5px" style="height:55px">
+					<div class="col-xs-2 padding-all-5px text-center">
+						<div class="thumbnail-icon"><i class="typcn typcn-bell"></i></div>
+					</div>
+					<div class="col-xs-9 padding-all-10px">
+						Nyalakan Notifikasi
+					</div>
+					<div class="col-xs-1 padding-all-10px">
+						<input id="notif" type="checkbox" class="form-control"/>
+					</div>
+				</div>
+				<a class="list-group-item color-black padding-all-5px" style="height:55px" href="pengaturan.html">
+					<div class="col-xs-2 padding-all-5px text-center">
+						<div class="thumbnail-icon"><i class="typcn typcn-cog-outline"></i></div>
+					</div>
+					<div class="col-xs-9 padding-all-10px">
+						Pengaturan Akun
+					</div>
+					<div class="col-xs-1 padding-all-10px">
+						<i class="typcn typcn-chevron-right"></i>
+					</div>
+				</a>
+			</div>
+			<div class="list-group padding-lr-10px padding-tb-5px">
+				<a class="list-group-item color-black padding-all-5px" style="height:55px" href="bantuan.html">
+					<div class="col-xs-2 padding-all-5px text-center">
+						<div class="thumbnail-icon"><i class="typcn typcn-headphones"></i></div>
+					</div>
+					<div class="col-xs-9 padding-all-10px">
+						Pusat Bantuan
+					</div>
+					<div class="col-xs-1 padding-all-10px">
+						<i class="typcn typcn-chevron-right"></i>
+					</div>
+				</a>
+				<a class="list-group-item color-black padding-all-5px" style="height:55px" data-toggle="modal" data-target="#aboutDialog">
+					<div class="col-xs-2 padding-all-5px text-center">
+						<div class="thumbnail-icon"><i class="typcn typcn-info-large-outline"></i></div>
+					</div>
+					<div class="col-xs-10 padding-all-10px">
+						Tentang
+					</div>
+				</a>
+				<a id="btn-keluar" class="list-group-item color-black padding-all-5px" style="height:55px">
+					<div class="col-xs-2 padding-all-5px text-center">
+						<div class="thumbnail-icon"><i class="typcn typcn-power-outline"></i></div>
+					</div>
+					<div class="col-xs-10 padding-all-10px">
+						Keluar
+					</div>
+				</a>
+			</div>
+		</div>
+		<script>
+			var user = window.localStorage.getItem("user");
+				user = JSON.parse(user);
+
+			$(document).ready(function(){
+				$('select').selectpicker();
+				init(false, true, false);
+				
+				$('.t_btn').click(function(){
+					$(this).html('<img src="../assets/images/ajax-loader(2).gif" width="20px"/>');
+					goSetting();
+				});
+				
+				$('#btn-keluar').click(function(){
+					var conf = confirm("Apakah Anda yakin keluar aplikasi ?");
+					
+					if(conf)
+						goOut();
+				});
+				
+				/* SET VALUE */
+				if(user['idlevel'] == '2')
+					$("#fitur-dokter").show();
+				$("#nama").text(user['nama']);
+				
+				if(user['showtelp'] == '1')
+					$("#show-phone").attr('checked','checked');
+				if(user['pemberitahuan'] == '1')
+					$("#notif").attr('checked','checked');
+				$("#ipt-lama").val(user['waktupelayanan']);
+				var telat = user['suspendqueue'];
+				if(user['suspendqueue'] == 'M'){
+					var m = user['suspendqueue'].split('-');
+						m = m[1];
+						telat = m[0];
+				}
+				$("#ipt-terlambat").val(telat);
+				$('select').selectpicker('refresh');
+				$("#ipt-m").val(m);
+				
+				$("#ipt-terlambat").change(function(){
+					if($(this).val() == 'M')
+						$("#ipt-m").show();
+					else
+						$("#ipt-m").hide();
+				});
+					
+				
+				var urlfoto = window.localStorage.getItem("url-foto");
+				if(urlfoto !== "null")
+					$("img").attr('src',urlfoto);
+				else if(user['idlevel'] === '2')
+					$("img").attr('src','../assets/images/doctor.jpg');
+				
+				/* END SET VALUE */
+			});
+			
+			function onBackButton(e) {
+				e.preventDefault();
+				
+				if($(".modal").is(":visible"))
+					$(".modal").hide();
+				else
+					navigator.app.backHistory();
+			}
+			
+			/* Simpan Pengaturan */
+			function goSetting(){
+				var showphone = 0;
+				if($("#show-phone").is(':checked'))
+					showphone = 1;
+				var notif = 0;
+				if($("#notif").is(':checked'))
+					notif = 1;
+				var terlambat = $("#ipt-terlambat").val();
+				if($("#ipt-terlambat").val() == 'M')
+					terlambat += '-'+$("#ipt-m").val();
+				
+				if(RegID == null){
+					RegID = window.localStorage.getItem("regid");
+				}
+				
+				var param 	= new Array();
+				param[0]	= user['token'];//token
+				param[1]	= user['userid'];//userid
+				param[2]	= RegID;//regid
+				param[3] 	= showphone;//shownotelp
+				param[4] 	= notif;//notifikasi
+				param[5] 	= $("#ipt-lama").val();//lama pelayanan
+				param[6] 	= terlambat;//terlambat
+				
+				var xhjr	= $.ajax({
+								data		: { f: 'setting', p: param },
+								dataType	: 'jsonp',
+								jsonp		: false,
+								url			: ws_host+"?callback=cbSetting",
+								timeout		: ws_timeout
+							});
+				
+				xhjr.error(function(xhr,status){
+					var arr_err = setErrorText(xhr, status);
+					
+					if(arr_err[0] == 1)
+						endLoad();
+				});
+			}
+			
+			function cbSetting(data){
+				if(data[0] == 2)
+					goOut();
+				else{
+					endLoad();
+					if(data[0] == 0){
+						window.localStorage.setItem("user",JSON.stringify(data[2]));
+					}
+				}
+			}
+			/* End Simpan Setting */
+			
+			function endLoad(){
+				$('.t_btn').removeClass('inf-rotation');
+				$('.t_btn').html('simpan');
+			}
+		</script>
+	</body>
+	
+</html>

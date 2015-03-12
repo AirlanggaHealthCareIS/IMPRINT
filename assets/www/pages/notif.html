@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- Bootstrap core CSS -->
+		<link href="../assets/css/bootstrap.min.css" rel="stylesheet">
+		<!-- Custom styles for this apps -->
+		<link href="../assets/css/imprint.min.css" rel="stylesheet">
+		<link href="../assets/css/typicons.min.css" rel="stylesheet">
+		<!-- Core JS -->
+		<script type="text/javascript" src="../assets/js/jquery.min.js"></script>
+		<script type="text/javascript" src="../assets/js/bootstrap.min.js"></script>
+		<!-- FastClick -->
+		<script type="text/javascript" src="../assets/js/fastclick.js"></script>
+		<script type="application/javascript">
+			$(function() {
+				FastClick.attach(document.body);
+			});
+		</script>
+		<!-- Core Cordova -->
+		<script type="text/javascript" src="../assets/js/cordova-2.7.0.js"></script>
+		<script type="text/javascript" src="../assets/js/imprint.conf.js"></script>
+		<script type="text/javascript" src="../assets/js/imprint.min.js"></script>
+	</head>
+	<body>
+		<nav class="navbar navbar-default navbar-fixed-top primary" role="navigation">
+			<div class="container">
+				<div class="navbar-header">
+					<a class="navbar-brand color-white padding-all-15px">
+						Notifikasi
+					</a>
+				</div>
+			</div>
+		</nav>
+		<nav class="navbar navbar-default navbar-fixed-top navbar-fixed-top-second" role="navigation">
+			<div class="container">
+				<a href="home.html" class="col-xs-3 navbar-brand padding-all-15px">
+					<i class="typcn typcn-group-outline"></i>
+				</a>
+				<a href="antrian.html" class="col-xs-3 navbar-brand padding-all-15px">
+					<i class="typcn typcn-device-desktop"></i>
+				</a>
+				<a href="notif.html" class="col-xs-3 navbar-brand padding-all-15px active">
+					<i class="typcn typcn-bell"></i>
+				</a>
+				<a href="lain.html" class="col-xs-3 navbar-brand padding-all-15px" >
+					<i class="typcn typcn-th-large-outline"></i>
+				</a>
+			</div>
+		</nav>
+		<div id="page" class="margin-top-100px">
+			<div class="container padding-all-10px border-bottom">
+				<div class="col-xs-12 padding-all-0px">
+					<div class="col-xs-1 padding-all-0px">
+						<h3><i class="typcn typcn-media-rewind-outline"></i></h3>
+					</div>
+					<div class="col-xs-11 padding-all-0px">
+						<span class="col-xs-12 color-primary">
+							Antrian Anda ditunda 6 menit ke 10:45 am karena mengaktifan kembali antrian Pasien X.
+						</span>
+						<span class="col-xs-12 margin-tb-5px">
+							28 Januari 2015 10:05 pm
+						</span>
+					</div>
+				</div>
+			</div>
+			<div class="container padding-all-10px border-bottom">
+				<div class="col-xs-12 padding-all-0px">
+					<div class="col-xs-1 padding-all-0px">
+						<h3><i class="typcn typcn-media-fast-forward-outline"></i></h3>
+					</div>
+					<div class="col-xs-11 padding-all-0px">
+						<span class="col-xs-12 color-primary">
+							Antrian Anda dipercepat 5 menit ke 10:50 am karena penundaan Pasien X.
+						</span>
+						<span class="col-xs-12 margin-tb-5px">
+							28 Januari 2015 10:05 pm
+						</span>
+					</div>
+				</div>
+			</div>
+			<div class="container padding-all-10px border-bottom">
+				<div class="col-xs-12 padding-all-0px">
+					<div class="col-xs-1 padding-all-0px">
+						<h3><i class="typcn typcn-media-stop-outline"></i></h3>
+					</div>
+					<div class="col-xs-11 padding-all-0px">
+						<span class="col-xs-12 color-primary">
+							Antrian Anda ditunda. Klik tombol "aktifkan" untuk mengaktifkan kembali antrian Anda.
+						</span>
+						<span class="col-xs-12 margin-tb-5px">
+							28 Januari 2015 10:05 pm
+						</span>
+					</div>
+				</div>
+			</div>
+			<div class="container padding-all-10px border-bottom">
+				<div class="col-xs-12 padding-all-0px">
+					<div class="col-xs-1 padding-all-0px">
+						<h3><i class="typcn typcn-media-play-outline"></i></h3>
+					</div>
+					<div class="col-xs-11 padding-all-0px">
+						<span class="col-xs-12 color-primary">
+							Antrian Anda berhasil diaktifkan kembali. Anda akan diperkirakan akan dilayani pada 12:05 pm selama 5 menit. 
+						</span>
+						<span class="col-xs-12 margin-tb-5px">
+							28 Januari 2015 10:05 pm
+						</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script>
+		$(document).ready(function(){
+			init();
+		});
+	</script>
+</html>

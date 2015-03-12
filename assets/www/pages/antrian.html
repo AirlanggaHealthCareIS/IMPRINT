@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- Bootstrap core CSS -->
+		<link href="../assets/css/bootstrap.min.css" rel="stylesheet">
+		<!-- Custom styles for this apps -->
+		<link href="../assets/css/imprint.min.css" rel="stylesheet">
+		<link href="../assets/css/typicons.min.css" rel="stylesheet">
+		<!-- Core JS -->
+		<script type="text/javascript" src="../assets/js/jquery.min.js"></script>
+		<script type="text/javascript" src="../assets/js/bootstrap.min.js"></script>
+		<!-- FastClick -->
+		<script type="text/javascript" src="../assets/js/fastclick.js"></script>
+		<script type="application/javascript">
+			$(function() {
+				FastClick.attach(document.body);
+			});
+		</script>
+		<!-- Core Cordova -->
+		<script type="text/javascript" src="../assets/js/cordova-2.7.0.js"></script>
+		<script type="text/javascript" src="../assets/js/PushNotification.js"></script>
+		<script type="text/javascript" src="../assets/js/imprint.conf.js"></script>
+		<script type="text/javascript" src="../assets/js/imprint.min.js"></script>
+	</head>
+	<body>
+		<nav class="navbar navbar-default navbar-fixed-top primary" role="navigation">
+			<div class="container">
+				<div class="navbar-header" id="top-header">
+					<a class="navbar-brand color-white padding-all-15px">
+						Papan Antrian
+					</a>
+				</div>
+			</div>
+		</nav>
+		<nav class="navbar navbar-default navbar-fixed-top navbar-fixed-top-second" role="navigation">
+			<div class="container">
+				<a href="home.html" class="col-xs-3 navbar-brand padding-all-15px">
+					<i class="typcn typcn-group-outline"></i>
+				</a>
+				<a href="antrian.html" class="col-xs-3 navbar-brand padding-all-15px active">
+					<i class="typcn typcn-device-desktop"></i>
+				</a>
+				<a href="notif.html" class="col-xs-3 navbar-brand padding-all-15px">
+					<i class="typcn typcn-bell"></i>
+				</a>
+				<a href="lain.html" class="col-xs-3 navbar-brand padding-all-15px" >
+					<i class="typcn typcn-th-large-outline"></i>
+				</a>
+			</div>
+		</nav>
+		<div id="page" class="margin-top-100px">
+			
+		</div>
+		<script>
+			var user 	= window.localStorage.getItem("user");
+				user 	= JSON.parse(user);
+			var param	= getUrlParameter();
+			$(document).ready(function() {
+				if(user['idlevel'] == '2')
+					$("#page").load('antriandokter.html');
+				else if(user['idlevel'] == '1')
+					$("#page").load('antrianpasien.html');
+			});
+		</script>
+	</body>
+</html>

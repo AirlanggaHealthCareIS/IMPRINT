@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- Bootstrap core CSS -->
+		<link href="../assets/css/bootstrap.min.css" rel="stylesheet">
+		<!-- Custom styles for this apps -->
+		<link href="../assets/css/imprint.min.css" rel="stylesheet">
+		<link href="../assets/css/typicons.min.css" rel="stylesheet">
+		<!-- Core JS -->
+		<script type="text/javascript" src="../assets/js/jquery.min.js"></script>
+		<script type="text/javascript" src="../assets/js/bootstrap.min.js"></script>
+		<!-- FastClick -->
+		<script type="text/javascript" src="../assets/js/fastclick.js"></script>
+		<script type="application/javascript">
+			$(function() {
+				FastClick.attach(document.body);
+			});
+		</script>
+		<!-- Clock Picker Plugin -->
+		<link href="../assets/css/bootstrap-clockpicker.css" rel="stylesheet">
+		<link href="../assets/css/bootstrap-clockpicker.min.css" rel="stylesheet">
+		<link href="../assets/css/jquery-clockpicker.css" rel="stylesheet">
+		<link href="../assets/css/jquery-clockpicker.min.css" rel="stylesheet">
+		<link href="../assets/css/clockpicker.css" rel="stylesheet">
+		<link href="../assets/css/standalone.min.css" rel="stylesheet">
+		<script type="text/javascript" src="../assets/js/bootstrap-clockpicker.js"></script>
+		<script type="text/javascript" src="../assets/js/bootstrap-clockpicker.min.js"></script>
+		<script type="text/javascript" src="../assets/js/jquery-clockpicker.js"></script>
+		<script type="text/javascript" src="../assets/js/jquery-clockpicker.min.js"></script>
+		<script type="text/javascript" src="../assets/js/clockpicker.js"></script>
+		<!-- Core Cordova -->
+		<script type="text/javascript" src="../assets/js/cordova-2.7.0.js"></script>
+		<script type="text/javascript" src="../assets/js/PushNotification.js"></script>
+		<script type="text/javascript" src="../assets/js/imprint.conf.js"></script>
+		<script type="text/javascript" src="../assets/js/imprint.min.js"></script>
+	</head>
+	<body>
+		<nav class="navbar navbar-default navbar-fixed-top primary" role="navigation">
+			<div class="container">
+				<div class="navbar-header">
+					<a href="lain.html" class="navbar-brand color-white padding-tb-15px">
+						<i class="typcn typcn-chevron-left-outline"></i>
+					</a>
+					<a class="navbar-brand color-white padding-all-15px">
+						Jadwal Praktek
+					</a>
+					<a id="btn-proses" class="navbar-brand pull-right color-white padding-tb-15px">
+						edit
+					</a>
+				</div>
+			</div>
+		</nav>
+		<div id="page" class="margin-top-50px">
+		</div>
+		<script>
+			var user = window.localStorage.getItem("user");
+				user = JSON.parse(user);
+			$(document).ready(function(){
+				init(false, true, false);
+				
+				$("#btn-proses").click(function(){
+					if($(".edit").is(':visible')){
+						goSaveJadwal();
+					}else{
+						$(".data").hide();
+						$(".edit").show();
+						$(this).text('simpan');
+					}
+				});
+				
+				getJadwal();
+			});
+			
+			function getJadwal(){
+				$("#page").html('<img src="../assets/images/ajax-loader.gif" width="20px" style="margin-top:60%;margin-left:45%"/>');
+				
+				var param 	= new Array();
+				param[0]	= user['token'];//token
+				param[1]	= user['userid'];//userid
+				param[2]	= window.localStorage.getItem("regid");//regid
+				
+				var xhjr	= $.ajax({
+								data		: { f: 'getschedule', p: param },
+								dataType	: 'jsonp',
+								jsonp		: false,
+								url			: ws_host+"?callback=cbGetJadwal",
+								timeout		: ws_timeout
+							});
+				
+				xhjr.error(function(xhr,status){
+					var arr_err = setErrorText(xhr, status);
+					
+					if(arr_err[0] == 1)
+						showWrong();
+				});
+			}
+			
+			function cbGetJadwal(data){
+			
+				if(data[0] == 0){
+					setHTMLJadwal(data[2]);
+				}
+				else if(data[0] == 1 || data[0] == 2)
+					goOut();
+			}
+			
+			function goSaveJadwal(){
+				$("#btn-proses").html('<img src="../assets/images/ajax-loader(2).gif" width="20px"/>');
+				
+				var data 	= new Array();
+				for(var i = 1; i < 8; i++){
+					var dt	= new Array();
+					dt[0]	= i;
+					dt[1]	= $("#awal_"+i).val();
+					dt[2]	= $("#akhir_"+i).val();
+					if($("#libur_"+i).is(':checked'))
+						dt[3]	= '1';
+					else
+						dt[3]	= '0';
+					
+					data.push(dt);
+				}
+				
+				var param 	= new Array();
+				param[0]	= user['token'];//token
+				param[1]	= user['userid'];//userid
+				param[2]	= window.localStorage.getItem("regid");//regid
+				param[3]	= data;//jadwal
+				
+				var xhjr	= $.ajax({
+								data		: { f: 'setschedule', p: param },
+								dataType	: 'jsonp',
+								jsonp		: false,
+								url			: ws_host+"?callback=cbSetJadwal",
+								timeout		: ws_timeout
+							});
+				
+				xhjr.error(function(xhr,status){
+					var arr_err = setErrorText(xhr, status);
+					
+					if(arr_err[0] == 1)
+						showWrong();
+				});
+			}
+			
+			function cbSetJadwal(data){
+				
+				if(data[0] == 0){
+					setHTMLJadwal(data[2]);
+					$("#btn-proses").text('edit');
+				}
+				else if(data[0] == 1 || data[0] == 2)
+					goOut();
+			}
+			
+			function setHTMLJadwal(data){
+				var html = '';
+				
+				for(var i = 1; i < 8; i++){
+					
+					var dt = data[i];
+					var	status = 'tersedia'; var check = '';
+					if(typeof dt != 'undefined' && dt != null && dt['islibur'] == '1'){
+						status = 'libur';
+						check  = 'checked';
+					}
+					var	hari = getDay(i);
+					var	jam_awal = '';
+					if(typeof dt != 'undefined' && dt != null && typeof dt['jam_awal'] != 'undefined' && dt['jam_awal'] != null && dt['islibur'] != '1')
+						jam_awal = dt['jam_awal'];
+					var	jam_akhir = '';
+					if(typeof dt != 'undefined' && dt != null && typeof dt['jam_akhir'] != 'undefined' && dt['jam_akhir'] != null && dt['islibur'] != '1')
+						jam_akhir = dt['jam_akhir'];
+					
+					html 	+= 	'<div class="container padding-all-10px border-bottom">'+
+									'<div class="col-xs-12 padding-all-0px">'+
+										'<div class="col-xs-4">'+
+											'<h4 class="color-primary text-uppercase padding-tb-10px">'+hari+'</h4>'+
+										'</div>'+
+										'<div class="col-xs-8 padding-tb-10px data">'+
+											'<span>'+jam_awal+' - '+jam_akhir+'</span><br/>'+
+											'<span>('+status+')</span>'+
+										'</div>'+
+										'<div class="col-xs-8 padding-tb-10px edit" style="display:none">'+
+											'<div class=" clockpicker">'+
+												'<input id="awal_'+i+'" type="text" class="form-control input-md margin-all-5px" placeholder="Jam Awal" value="'+jam_awal+'">'+
+											'</div>'+
+											'<div class=" clockpicker">'+
+												'<input id="akhir_'+i+'" type="text" class="form-control input-md margin-all-5px" placeholder="Jam Akhir" value="'+jam_akhir+'">'+
+											'</div>'+
+											'<div class="checkbox margin-all-5px">'+
+												'<label>'+
+													'<input id="libur_'+i+'" type="checkbox" '+check+' > Libur'+
+												'</label>'+
+											'</div>'+
+										'</div>'+
+									'</div>'+
+								'</div>';
+				}
+				
+				$("#page").html(html);
+				$('.clockpicker').clockpicker({
+					autoclose: true
+				});
+				
+				$('.clockpicker input').focus(function(){
+					$(this).blur();
+				});
+			}
+			
+			function showWrong(){
+				$("#page").html('<div style="margin-top:50%" class="text-center" onclick="getJadwal();"><h1><i class="typcn typcn-refresh-outline"></i></h1><br/>Tap untuk menyegarkan</div>');
+			}
+		</script>
+	</body>
+</html>

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- Bootstrap core CSS -->
+		<link href="../assets/css/bootstrap.min.css" rel="stylesheet">
+		<!-- Custom styles for this apps -->
+		<link href="../assets/css/imprint.min.css" rel="stylesheet">
+		<link href="../assets/css/typicons.min.css" rel="stylesheet">
+		<!-- Core JS -->
+		<script type="text/javascript" src="../assets/js/jquery.min.js"></script>
+		<script type="text/javascript" src="../assets/js/bootstrap.min.js"></script>
+		<!-- FastClick -->
+		<script type="text/javascript" src="../assets/js/fastclick.js"></script>
+		<script type="application/javascript">
+			$(function() {
+				FastClick.attach(document.body);
+			});
+		</script>
+		<!-- DatePicker Plugin -->
+		<link href="../assets/css/datepicker3.css" rel="stylesheet">
+		<script type="text/javascript" src="../assets/js/bootstrap-datepicker.js"></script>
+		<!-- Core Cordova -->
+		<script type="text/javascript" src="../assets/js/cordova-2.7.0.js"></script>
+		<script type="text/javascript" src="../assets/js/PushNotification.js"></script>
+		<script type="text/javascript" src="../assets/js/imprint.conf.js"></script>
+		<script type="text/javascript" src="../assets/js/imprint.min.js"></script>
+	</head>
+	<body>
+		<nav class="navbar navbar-default navbar-fixed-top primary" role="navigation">
+			<div class="container">
+				<div class="navbar-header">
+					<a href="lain.html" class="navbar-brand color-white padding-tb-15px">
+						<i class="typcn typcn-chevron-left-outline"></i>
+					</a>
+					<a class="navbar-brand color-white padding-all-15px">
+						Daftar Hari Libur
+					</a>
+					<a class="navbar-brand pull-right color-white padding-tb-15px" data-toggle="modal" data-target="#addForm">
+						<i class="typcn typcn-plus-outline"></i>
+					</a>
+				</div>
+			</div>
+		</nav>
+		<div id="page" class="margin-top-50px">
+			<div class="modal fade" id="addForm" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+							<h4 class="modal-title">Tambahkan hari libur</h4>
+						</div>
+						<div class="modal-body">
+							<input id="ipt-libur" type="text" class="form-control input-md" placeholder="dd-mm-yyyy">
+						</div>
+						<div class="modal-footer">
+							<div id="btn-proses" class="btn primary">Simpan</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id="place-for">
+			</div>
+		</div>
+		<script>
+			var user = window.localStorage.getItem("user");
+				user = JSON.parse(user);
+			$(document).ready(function(){
+				init(false, true, false);
+				$('.modal-body input').datepicker();
+				$('.modal-body input').focus(function(){
+					$(this).blur();
+				});
+				
+				$("#btn-proses").click(function(){
+					goSaveLibur();
+				});
+				
+				getLibur();
+			});
+			
+			function getLibur(){
+				
+				$("#place-for").html('<img src="../assets/images/ajax-loader.gif" width="20px" style="margin-top:60%;margin-left:45%"/>');
+				
+				var param 	= new Array();
+				param[0]	= user['token'];//token
+				param[1]	= user['userid'];//userid
+				param[2]	= window.localStorage.getItem("regid");//regid
+				
+				var xhjr	= $.ajax({
+								data		: { f: 'getholiday', p: param },
+								dataType	: 'jsonp',
+								jsonp		: false,
+								url			: ws_host+"?callback=cbGetLibur",
+								timeout		: ws_timeout
+							});
+				
+				xhjr.error(function(xhr,status){
+					var arr_err = setErrorText(xhr, status);
+					
+					if(arr_err[0] == 1)
+						showWrong();
+				});
+			}
+			
+			function cbGetLibur(data){
+				
+				if(data[0] == 2)
+					goOut();
+				else if(data[0] == 1)
+					showWrong();
+				else
+					setHTMLLibur(data[2]);
+			}
+			
+			function goSaveLibur(){
+				
+				$("#btn-proses").html('<img src="../assets/images/ajax-loader(2).gif" width="10px"/>');
+				
+				var param 	= new Array();
+				param[0]	= user['token'];//token
+				param[1]	= user['userid'];//userid
+				param[2]	= window.localStorage.getItem("regid");//regid
+				param[3]	= $("#ipt-libur").val();//tgl libur
+				param[4]	= '1';
+				
+				var xhjr	= $.ajax({
+								data		: { f: 'setholiday', p: param },
+								dataType	: 'jsonp',
+								jsonp		: false,
+								url			: ws_host+"?callback=cbSetLibur",
+								timeout		: ws_timeout
+							});
+				
+				xhjr.error(function(xhr,status){
+					var arr_err = setErrorText(xhr, status);
+					
+					if(arr_err[0] == 1)
+						$("#btn-proses").text('simpan');
+				});
+			}
+			
+			function cbSetLibur(data){
+				if(data[0] == 2)
+					goOut();
+				else if(data[0] == 1)
+					$("#btn-proses").text('simpan');
+				else{
+					$(".modal").hide();
+					$("#btn-proses").text('simpan');
+					setHTMLLibur(data[2]);
+				}
+			}
+			
+			function goDeleteLibur(elem){
+				var current	= $(elem).html();
+				$(elem).html('Menghapus..');
+				
+				var param 	= new Array();
+				param[0]	= user['token'];//token
+				param[1]	= user['userid'];//userid
+				param[2]	= window.localStorage.getItem("regid");//regid
+				param[3]	= $(elem).attr('id');//tgl
+				param[4]	= '0';
+				
+				var xhjr	= $.ajax({
+								data		: { f: 'setholiday', p: param },
+								dataType	: 'jsonp',
+								jsonp		: false,
+								url			: ws_host+"?callback=cbDelLibur",
+								timeout		: ws_timeout
+							});
+				xhjr.error(function(xhr,status){
+					var arr_err = setErrorText(xhr, status);
+					
+					if(arr_err[0] == 1)
+						$("#"+id).html(current);
+				});
+			}
+			
+			function cbDelLibur(data){
+				if(data[0] == 0){
+					setHTMLLibur(data[2]);
+				}
+				else if(data[0] == 1 || data[0] == 2)
+					goOut();
+			}
+			
+			function setHTMLLibur(data){
+				var html 	= '<div class="list-group padding-lr-10px padding-tb-5px" >';
+				
+				if(data.length > 0){
+					for(var i in data){
+						var dt = data[i];
+						
+						html	+= 	'<div onclick="goDeleteLibur(this)" id="'+dt['tgl']+'" class="list-group-item color-black padding-all-10px" style="height:55px;">'+
+										'<div class="col-xs-11 padding-all-5px">'+
+											dt['hari']+', '+dt['tanggal']+
+										'</div>'+
+										'<div class="col-xs-1 padding-all-0px" style="font-size:20px">'+
+											'<i class="typcn typcn-trash"></i>'+
+										'</div>'+
+									'</div>';
+					}
+				}
+				else{
+						html	+= 	'<div class="list-group-item color-black padding-all-10px" style="height:55px;">Anda belum menginputkan tanggal libur.</div>';
+				}
+				html	+= '</div>';
+				
+				$("#place-for").html(html);
+			}
+			function showWrong(){
+				$("#place-for").html('<div style="margin-top:50%" class="text-center" onclick="getLibur();"><h1><i class="typcn typcn-refresh-outline"></i></h1><br/>Tap untuk menyegarkan</div>');
+			}
+		</script>
+	</body>
+</html>
