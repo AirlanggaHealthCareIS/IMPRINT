@@ -1,0 +1,352 @@
+/* 
+ * Created By Nur Maulidiyah 8 Nopember 2014
+ * Copyright 2014 The Mantos Institute 
+ *
+ * Background 
+ * based on http://flatuicolors.com/
+ */
+ 
+ /*
+ * GLOBAL
+ */
+ /*
+ @font-face{
+	font-family:'raleway';
+	font-weight:normal;
+	font-style:normal;
+	src:url('../fonts/Raleway Thin.otf');
+	src:url('../fonts/Raleway Thin.ttf') format('truetype')
+}
+ */
+ 
+@font-face{
+  font-family: 'raleway';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../fonts/Raleway.ttf') format('truetype'), url('../fonts/Raleway.woff2') format('woff2'), url('../fonts/Raleway.woff') format('woff'),url('../fonts/Raleway.svg') format('svg');
+}
+ 
+ body{
+	font-family:'raleway';
+	-webkit-text-size-adjust:150%;
+	-ms-text-size-adjust:150%;
+	/*background : #eef2f3;*/
+	background : #ecf0f1;
+}
+ 
+ input{
+	color:black;
+ }
+ 
+ .word-wrap {
+	word-wrap: break-word;
+ }
+ 
+ .icon-fly{
+	background: none repeat scroll 0% 0% #e74c3c;
+	text-align: center;
+	width: 20px;
+	position: relative;
+	top: -20px;
+	z-index: 99;
+	height: 20px;
+	color : white;
+	border : solid 1px white;
+	border-radius:50%;
+ }
+ 
+ *:hover{
+	text-decoration:none !important;
+ }
+ 
+ .err{
+	background:#f0cac6;
+ }
+/*
+ * SIGN IN FORM
+ */
+
+.body-signin {
+  padding-top: 40px;
+  padding-bottom: 40px;
+  text-align:center;
+  min-height:100%;
+  height:100%;
+}
+
+.form-signin {
+  max-width: 330px;
+  padding: 15px;
+  margin: 0 auto;
+}
+
+.bg-profil{
+	background : #403938;
+	border-top : solid 1px #403938;
+}
+
+/*
+ * NAV
+ */
+ .navbar-brand{
+	-webkit-tap-highlight-color: rgba(0,0,0,0.2);
+	-webkit-tap-highlight-color: transparent;
+ }
+  .navbar-brand:hover, .navbar-brand :focus, .navbar-brand :active{
+	background: linear-gradient(
+      rgba(0, 0, 0, 0.2), 
+      rgba(0, 0, 0, 0.2)
+    );
+  }
+
+/*
+ * THUMBNAIL
+ */
+ .thumbnail-icon{
+	width:35px;
+	height:35px;
+	font-size:1.5em;
+	color:white;
+	background:#95a5a6;
+	border-radius:50%;
+ }
+ 
+/*
+ * SECONDARY NAV
+ */
+.navbar-fixed-top-second{
+	top:50px;
+	background:white;
+}
+.navbar-fixed-top-second a{
+	text-align:center;
+	font-size:2em;
+}
+.navbar-fixed-top-second .active{
+	color : #e74c3c;
+}
+
+/*
+ * BOTTOM NAV
+ */
+.navbar-fixed-bottom{
+	bottom:0px;
+}
+
+/*
+ * LIST
+ */
+ #page .container:hover,#page .container:active, #page .container:focus{
+	background:#f9fafa;
+}
+.border-bottom{
+	border-bottom:solid 1px #ecf0f1 !important;
+}
+.border-top{
+	border-top:solid 1px #ecf0f1 !important;
+}
+.border-left{
+	border-left:solid 1px #ecf0f1 !important;
+}
+.border-right{
+	border-right:solid 1px #ecf0f1 !important;
+}
+.disable{
+	background: #ecf0f1;
+	color: #bdc3c7;
+}
+ 
+/*
+ * COLORING
+ */
+.primary{
+	background : #e74c3c;
+	color:white;
+}
+.secondary{
+	background:#f4f7f8;
+	color:#7f8c8d !important;
+}
+button.primary:hover,button.primary:active,div.primary:hover,div.primary:active
+,input.primary:hover,input.primary:active,a.primary:hover,a.primary:active{
+	background : #c0392b;
+	color:white;
+}
+.color-white{
+	color : white !important;
+}
+.color-primary{
+	color : #e74c3c !important;
+}
+.color-black{
+	color : black !important;
+}
+.color-grey{
+	color : #c5c5c5 !important;
+}
+ 
+
+/*
+ * PADDING
+ */
+.padding-all-0px{
+	padding:0px !important;
+}
+.padding-all-5px{
+	padding:5px !important;
+}
+.padding-all-10px{
+	padding:10px !important;
+}
+.padding-all-15px{
+	padding:15px !important;
+}
+.padding-all-20px{
+	padding:20px !important;
+}
+
+.padding-tb-0px{
+	padding-top:0px !important;
+	padding-bottom:0px !important;
+}
+.padding-tb-5px{
+	padding-top:5px !important;
+	padding-bottom:5px !important;
+}
+.padding-tb-10px{
+	padding-top:10px !important;
+	padding-bottom:10px !important;
+}
+.padding-tb-15px{
+	padding-top:15px !important;
+	padding-bottom:15px !important;
+}
+.padding-tb-20px{
+	padding-top:20px !important;
+	padding-bottom:20px !important;
+}
+
+.padding-top-50px{
+	padding-top:50px !important;
+}
+.padding-top-20px{
+	padding-top:20px !important;
+}
+
+.padding-lr-0px{
+	padding-left:0px !important;
+	padding-right:0px !important;
+}
+.padding-lr-5px{
+	padding-left:5px !important;
+	padding-right:5px !important;
+}
+.padding-lr-10px{
+	padding-left:10px !important;
+	padding-right:10px !important;
+}
+.padding-lr-15px{
+	padding-left:15px !important;
+	padding-right:15px !important;
+}
+.padding-lr-20px{
+	padding-left:20px !important;
+	padding-right:20px !important;
+}
+
+/*
+ * MARGIN
+ */
+ 
+.margin-all-0px{
+	margin:0px !important;
+}
+.margin-all-5px{
+	margin:5px !important;
+}
+.margin-all-10px{
+	margin:10px !important;
+}
+.margin-all-15px{
+	margin:15px !important;
+}
+.margin-all-20px{
+	margin:20px !important;
+}
+
+.margin-tb-0px{
+	margin-top:0px !important;
+	margin-bottom:0px !important;
+}
+.margin-tb-5px{
+	margin-top:5px !important;
+	margin-bottom:5px !important;
+}
+.margin-tb-10px{
+	margin-top:10px !important;
+	margin-bottom:10px !important;
+}
+.margin-tb-15px{
+	margin-top:15px !important;
+	margin-bottom:15px !important;
+}
+.margin-tb-20px{
+	margin-top:20px !important;
+	margin-bottom:20px !important;
+}
+
+.margin-top-100px{
+	margin-top:100px !important;
+}
+.margin-top-50px{
+	margin-top:50px !important;
+}
+.margin-top-20px{
+	margin-top:50px !important;
+}
+
+.margin-lr-0px{
+	margin-left:0px !important;
+	margin-right:0px !important;
+}
+.margin-lr-5px{
+	margin-left:5px !important;
+	margin-right:5px !important;
+}
+.margin-lr-10px{
+	margin-left:10px !important;
+	margin-right:10px !important;
+}
+.margin-lr-15px{
+	margin-left:15px !important;
+	margin-right:15px !important;
+}
+.margin-lr-20px{
+	margin-left:20px !important;
+	margin-right:20px !important;
+}
+
+/*
+ * GRAYSCALE
+ */
+ 
+.grayscale{
+	-webkit-filter: grayscale(100%); 
+	-moz-filter: grayscale(100%);
+	filter: grayscale(100%);
+	filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#grayscale"); /* Firefox 3.5+ */
+    filter: gray; /* IE6-9 */
+}
+.grayscale:hover{
+	filter:none;
+}
+
+/*
+ * ROTATION
+ */
+ @keyframes roty {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+.inf-rotation { animation: 2s roty infinite linear; }
+
