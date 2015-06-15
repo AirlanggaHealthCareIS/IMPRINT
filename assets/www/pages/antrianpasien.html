@@ -23,15 +23,22 @@
 			<h1 id="wkt_pel"></h1>
 			<br/><br/>
 			<div id="ket">
-				Anda terdaftar dalam antrian <span id="dokter"></span>, dengan keluhan :
+				Anda terdaftar dalam antrian <span id="dokter"></span>, pada tanggal <span id="hari"></span> dengan keluhan :
 				<br/>
 				<span id="keluhan"></span>
+				<br/>
+				<span id="status" class="color-primary"></span>
 			</div>
 		</div>
 	</div>
 	<div class="col-xs-12 padding-all-10px">
 		<div class="col-xs-12 btn primary" id="btn-batal">
 			B A T A L K A N
+		</div>
+	</div>
+	<div class="col-xs-12 padding-all-10px">
+		<div class="col-xs-12 btn primary" id="btn-aktif" style="display:none">
+			A K T I F K A N
 		</div>
 	</div>
 </div>
@@ -58,6 +65,10 @@
 		
 		$("#btn-batal").click(function(){
 			goBatal();
+		});
+		
+		$("#btn-aktif").click(function(){
+			goAktif();
 		});
 		
 		getAntrian();
@@ -88,6 +99,7 @@
 	}
 	
 	function cbQPasien(data){
+		
 		if(data[0] == 2)
 			goOut();
 		else if(data[0] == 0){
@@ -112,7 +124,17 @@
 			$("#sekarang").text(data['sekarang']);
 			$("#wkt_pel").text(data['estimasi_waktumasuk']);
 			$("#dokter").text(data['nama']);
-			$("#keluhan").text(data['namakeluhan']);
+			if(data['namakeluhan'] != null)
+				$("#keluhan").text(data['namakeluhan']);
+			else
+				$("#keluhan").text('-');
+			$("#hari").text(data['hari']+", "+data['tgl']);
+			
+			if(data['statusantrian'] == 2){
+				$('#btn-aktif').show();
+				$('#status').text('ANTRIAN ANDA SAT INI SEDANG DISUSPEND. Untuk mengaktifkan kembali, klik tombol "AKTIFKAN".');
+				$('#exist .list-group-item').addClass('secondary');
+			}
 		}
 		else{
 			$("#notexist").show();
@@ -121,7 +143,7 @@
 	}
 	
 	function goBatal(){
-		$("#btn-batal").text('memproses');
+		$("#btn-batal").text('memproses...');
 		
 		var param 	= new Array();
 		param[0] 	= user['token'];//token
@@ -152,6 +174,42 @@
 			setHTML(null);				
 		}else{
 			$("#btn-batal").text('B A T A L K A N');
+			alert(data[1])
+		}
+	}
+	
+	function goAktif(){
+		$("#btn-aktif").text('memproses...');
+		
+		var param 	= new Array();
+		param[0] 	= user['token'];//token
+		param[1] 	= user['userid'];//userid
+		param[2]	= window.localStorage.getItem("regid");//regid
+		param[3]	= idantrian;
+		
+		var xhjr	= $.ajax({
+						data		: { f: 'activatequeue', p: param },
+						dataType	: 'jsonp',
+						jsonp		: false,
+						url			: ws_host+"?callback=cbActive",
+						timeout		: ws_timeout
+					});
+		xhjr.error(function(xhr,status){
+			var arr_err = setErrorText(xhr, status);
+			
+			if(arr_err[0] == 1){
+				$("#btn-aktif").text('A K T I F K A N');
+			}
+		});
+	}
+	
+	function cbActive(data){
+		if(data[0] == 2)
+			goOut();
+		else if(data[0] == 0){
+			getAntrian();			
+		}else{
+			$("#btn-aktif").text('A K T I F K A N');
 			alert(data[1])
 		}
 	}

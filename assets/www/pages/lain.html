@@ -53,6 +53,7 @@
 				</a>
 				<a href="notif.html" class="col-xs-3 navbar-brand padding-all-15px">
 					<i class="typcn typcn-bell"></i>
+					<span class="notif"></span>
 				</a>
 				<a href="lain.html" class="col-xs-3 navbar-brand padding-all-15px active" >
 					<i class="typcn typcn-th-large-outline"></i>
@@ -132,17 +133,6 @@
 						<i class="typcn typcn-chevron-right"></i>
 					</div>
 				</a>
-				<a class="list-group-item color-black padding-all-5px" style="height:55px" href="dashboard.html">
-					<div class="col-xs-2 padding-all-5px text-center">
-						<div class="thumbnail-icon"><i class="typcn typcn-chart-pie-outline"></i></div>
-					</div>
-					<div class="col-xs-9 padding-all-10px">
-						Dashboard
-					</div>
-					<div class="col-xs-1 padding-all-10px">
-						<i class="typcn typcn-chevron-right"></i>
-					</div>
-				</a>
 				<a class="list-group-item color-black padding-all-5px" style="height:55px" >
 					<div class="col-xs-2 padding-all-5px text-center">
 						<div class="thumbnail-icon"><i class="typcn typcn-stopwatch"></i></div>
@@ -174,17 +164,6 @@
 				</a>
 			</div>
 			<div class="list-group padding-lr-10px padding-tb-5px">
-				<div class="list-group-item color-black padding-all-5px" style="height:55px">
-					<div class="col-xs-2 padding-all-5px text-center">
-						<div class="thumbnail-icon"><i class="typcn typcn-phone-outline"></i></div>
-					</div>
-					<div class="col-xs-9 padding-all-10px">
-						Tampilkan Nomor Telp
-					</div>
-					<div class="col-xs-1 padding-all-10px">
-						<input id="show-phone" type="checkbox" class="form-control"/>
-					</div>
-				</div>
 				<div class="list-group-item color-black padding-all-5px" style="height:55px">
 					<div class="col-xs-2 padding-all-5px text-center">
 						<div class="thumbnail-icon"><i class="typcn typcn-bell"></i></div>
@@ -245,6 +224,10 @@
 			$(document).ready(function(){
 				$('select').selectpicker();
 				init(false, true, false);
+				
+				if(unread_notif > 0){
+					$(".notif").text(unread_notif).show();
+				}
 				
 				$('.t_btn').click(function(){
 					$(this).html('<img src="../assets/images/ajax-loader(2).gif" width="20px"/>');

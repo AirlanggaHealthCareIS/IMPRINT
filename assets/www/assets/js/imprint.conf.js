@@ -5,7 +5,7 @@
  */
  
  /* API SERVICES */
- var ws_host    = "http://192.168.1.102/API/app_api.php";
+ var ws_host    = "http://192.168.1.101/API/app_api.php";
  var ws_timeout	= 10000;
  
  /* GCM SERVICES */
@@ -15,6 +15,13 @@
  var isreg;
  var isunreg;
  var islogin;
+ var unread_notif = 0;
+ 
+ if (localStorage) {
+	if(localStorage.unread){
+		unread_notif = localStorage.unread;
+	}
+ }
  
  /* CAMERA AND FEAT ACCESS */
   var pictureSource;

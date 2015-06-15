@@ -34,7 +34,7 @@
 		<nav class="navbar navbar-default navbar-fixed-top primary" role="navigation" style="border:none">
 			<div class="container">
 				<div class="navbar-header">
-					<a href="home.html" class="navbar-brand color-white padding-tb-15px">
+					<a id="btn-back" class="navbar-brand color-white padding-tb-15px">
 						<i class="typcn typcn-chevron-left-outline"></i>
 					</a>
 					<a class="navbar-brand color-white padding-tb-15px">
@@ -130,6 +130,10 @@
 				
 				$("#btn-tiket").click(function(){
 					getComplaint();
+				});
+				
+				$("#btn-back").click(function(){
+					navigator.app.backHistory();
 				});
 				
 				setHTMLBasic(param);
@@ -238,14 +242,14 @@
 			function getJadwal(dt){
 				$("#place-jadwal").html('<img src="../assets/images/ajax-loader.gif" width="20px" style="margin-left:45%"/>');
 			
-				var param 	= new Array();
-				param[0] 	= user['token'];//token
-				param[1] 	= user['userid'];//userid
-				param[2]	= window.localStorage.getItem("regid");//regid
-				param[3]	= dt['iddokter'];//iddokter
+				var p 	= new Array();
+				p[0] 	= user['token'];//token
+				p[1] 	= user['userid'];//userid
+				p[2]	= window.localStorage.getItem("regid");//regid
+				p[3]	= dt['iddokter'];//iddokter
 				
 				var xhjr	= $.ajax({
-								data		: { f: 'scheduledoctor', p: param },
+								data		: { f: 'scheduledoctor', p: p },
 								dataType	: 'jsonp',
 								jsonp		: false,
 								url			: ws_host+"?callback=cbJadwal",
@@ -336,15 +340,18 @@
 			
 			function getAntrian(){
 				
+				var tgl	= $("#tanggal").val().split("-");
+				tgl		= tgl[2]+"-"+tgl[1]+"-"+tgl[0];
+			
 				var p 	= new Array();
 				p[0] 	= user['token'];//token
 				p[1] 	= user['userid'];//userid
 				p[2]	= window.localStorage.getItem("regid");//regid
-				p[3]	= param['iddokter'];//iddokter
-				p[4]	= $("#tanggal").val();//tgl
-				
+				p[3]	= tgl;
+				p[4]	= param['iddokter'];//iddokter	
+				console.log("param -> "+p);
 				var xhjr	= $.ajax({
-								data		: { f: 'queuedoctor', p: p},
+								data		: { f: 'doctorqueue', p: p},
 								dataType	: 'jsonp',
 								jsonp		: false,
 								url			: ws_host+"?callback=cbAntrian",
@@ -361,7 +368,7 @@
 			}
 			
 			function cbAntrian(data){
-				
+				console.log("result->"+data);
 				if(data[0] == 2)
 					goOut();
 				else if(data[0] == 1)
@@ -369,15 +376,19 @@
 				else{
 					$("#btn-antrian").html('<i class="typcn typcn-media-play-outline"></i>');
 					var dt = data[2];
-					//Status
-					if(typeof dt['islibur'] != 'undefined' && dt['islibur'] != "0")
-						$("#status").text('(libur)');
-					//Sekarang
-					if(typeof dt['sekarang'] != 'undefined' && dt['sekarang'] != "null")
-						$("#sekarang").text(dt['sekarang']);
-					//Banyak antrian
-					if(typeof dt['banyakantrian'] != 'undefined' && dt['banyakantrian'] != "null")
-						$("#banyakantrian").text(dt['banyakantrian']);
+					if(typeof(dt) != 'undefined'){
+						//Status
+						if(typeof dt['islibur'] != 'undefined' && dt['islibur'] != "0")
+							$("#status").text('(libur)');
+						else
+							$("#status").text('(tersedia)');
+						//Sekarang
+						if(typeof dt['min'] != 'undefined' && dt['min'] != null)
+							$("#sekarang").text(dt['min']);
+						//Banyak antrian
+						if(typeof dt['max'] != 'undefined' && dt['max'] != null)
+							$("#banyakantrian").text(dt['max']);
+					}
 				}
 			}
 			
@@ -482,12 +493,16 @@
 				});
 					keluhan	= keluhan.join('|');
 				
+				var tgl = $("#tanggal_antri").val();
+				tgl = tgl.split('-');
+				tgl = tgl[2]+"-"+tgl[1]+"-"+tgl[0];
+				
 				var p 	= new Array();
 				p[0] 	= user['token'];//token
 				p[1] 	= user['userid'];//userid
 				p[2]	= window.localStorage.getItem("regid");//regid
 				p[3]	= param['iddokter'];//iddokter
-				p[4]	= $("#tanggal_antri").val();//tgl
+				p[4]	= tgl;//tgl
 				p[5]	= keluhan
 				
 				var xhjr	= $.ajax({
@@ -508,6 +523,7 @@
 			}
 			
 			function cbRegDoctor(data){
+			
 				if(data[0] == 2)
 					goOut();
 				else if(data[0] == 0){

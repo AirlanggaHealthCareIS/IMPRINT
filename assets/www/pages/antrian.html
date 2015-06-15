@@ -4,6 +4,7 @@
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta http-equiv="refresh" content="30" >
 		<!-- Bootstrap core CSS -->
 		<link href="../assets/css/bootstrap.min.css" rel="stylesheet">
 		<!-- Custom styles for this apps -->
@@ -19,6 +20,9 @@
 				FastClick.attach(document.body);
 			});
 		</script>
+		<!-- DatePicker Plugin -->
+		<link href="../assets/css/datepicker3.css" rel="stylesheet">
+		<script type="text/javascript" src="../assets/js/bootstrap-datepicker.js"></script>
 		<!-- Core Cordova -->
 		<script type="text/javascript" src="../assets/js/cordova-2.7.0.js"></script>
 		<script type="text/javascript" src="../assets/js/PushNotification.js"></script>
@@ -31,6 +35,9 @@
 				<div class="navbar-header" id="top-header">
 					<a class="navbar-brand color-white padding-all-15px">
 						Papan Antrian
+					</a>
+					<a id="btn-cari" class="navbar-brand pull-right color-white padding-tb-15px" style="display:none">
+						cari
 					</a>
 				</div>
 			</div>
@@ -45,6 +52,7 @@
 				</a>
 				<a href="notif.html" class="col-xs-3 navbar-brand padding-all-15px">
 					<i class="typcn typcn-bell"></i>
+					<span class="notif"></span>
 				</a>
 				<a href="lain.html" class="col-xs-3 navbar-brand padding-all-15px" >
 					<i class="typcn typcn-th-large-outline"></i>
@@ -59,6 +67,10 @@
 				user 	= JSON.parse(user);
 			var param	= getUrlParameter();
 			$(document).ready(function() {
+				if(unread_notif > 0){
+					$(".notif").text(unread_notif).show();
+				}
+			
 				if(user['idlevel'] == '2')
 					$("#page").load('antriandokter.html');
 				else if(user['idlevel'] == '1')

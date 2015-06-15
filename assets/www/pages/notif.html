@@ -21,6 +21,7 @@
 		</script>
 		<!-- Core Cordova -->
 		<script type="text/javascript" src="../assets/js/cordova-2.7.0.js"></script>
+		<script type="text/javascript" src="../assets/js/PushNotification.js"></script>
 		<script type="text/javascript" src="../assets/js/imprint.conf.js"></script>
 		<script type="text/javascript" src="../assets/js/imprint.min.js"></script>
 	</head>
@@ -44,78 +45,88 @@
 				</a>
 				<a href="notif.html" class="col-xs-3 navbar-brand padding-all-15px active">
 					<i class="typcn typcn-bell"></i>
+					<span class="notif"></span>
 				</a>
 				<a href="lain.html" class="col-xs-3 navbar-brand padding-all-15px" >
 					<i class="typcn typcn-th-large-outline"></i>
 				</a>
 			</div>
 		</nav>
-		<div id="page" class="margin-top-100px">
-			<div class="container padding-all-10px border-bottom">
-				<div class="col-xs-12 padding-all-0px">
-					<div class="col-xs-1 padding-all-0px">
-						<h3><i class="typcn typcn-media-rewind-outline"></i></h3>
-					</div>
-					<div class="col-xs-11 padding-all-0px">
-						<span class="col-xs-12 color-primary">
-							Antrian Anda ditunda 6 menit ke 10:45 am karena mengaktifan kembali antrian Pasien X.
-						</span>
-						<span class="col-xs-12 margin-tb-5px">
-							28 Januari 2015 10:05 pm
-						</span>
-					</div>
-				</div>
-			</div>
-			<div class="container padding-all-10px border-bottom">
-				<div class="col-xs-12 padding-all-0px">
-					<div class="col-xs-1 padding-all-0px">
-						<h3><i class="typcn typcn-media-fast-forward-outline"></i></h3>
-					</div>
-					<div class="col-xs-11 padding-all-0px">
-						<span class="col-xs-12 color-primary">
-							Antrian Anda dipercepat 5 menit ke 10:50 am karena penundaan Pasien X.
-						</span>
-						<span class="col-xs-12 margin-tb-5px">
-							28 Januari 2015 10:05 pm
-						</span>
-					</div>
-				</div>
-			</div>
-			<div class="container padding-all-10px border-bottom">
-				<div class="col-xs-12 padding-all-0px">
-					<div class="col-xs-1 padding-all-0px">
-						<h3><i class="typcn typcn-media-stop-outline"></i></h3>
-					</div>
-					<div class="col-xs-11 padding-all-0px">
-						<span class="col-xs-12 color-primary">
-							Antrian Anda ditunda. Klik tombol "aktifkan" untuk mengaktifkan kembali antrian Anda.
-						</span>
-						<span class="col-xs-12 margin-tb-5px">
-							28 Januari 2015 10:05 pm
-						</span>
-					</div>
-				</div>
-			</div>
-			<div class="container padding-all-10px border-bottom">
-				<div class="col-xs-12 padding-all-0px">
-					<div class="col-xs-1 padding-all-0px">
-						<h3><i class="typcn typcn-media-play-outline"></i></h3>
-					</div>
-					<div class="col-xs-11 padding-all-0px">
-						<span class="col-xs-12 color-primary">
-							Antrian Anda berhasil diaktifkan kembali. Anda akan diperkirakan akan dilayani pada 12:05 pm selama 5 menit. 
-						</span>
-						<span class="col-xs-12 margin-tb-5px">
-							28 Januari 2015 10:05 pm
-						</span>
-					</div>
-				</div>
-			</div>
+		<div id="place-for" class="margin-top-100px">
 		</div>
 	</body>
 	<script>
+		var user = window.localStorage.getItem("user");
+			user = JSON.parse(user);
 		$(document).ready(function(){
 			init();
+			localStorage.unread = 0;
+			unread_notif = 0;
+			
+			requestNotif();
 		});
+		
+		function requestNotif(){
+			$("#place-for").html('<img src="../assets/images/ajax-loader.gif" width="20px" style="margin-top:60%;margin-left:45%"/>');
+			
+			var param 	= new Array();
+			param[0] 	= user['token'];//token
+			param[1] 	= user['userid'];//userid
+			param[2]	= window.localStorage.getItem("regid");//regid
+			
+			var xhjr	= $.ajax({
+							data		: { f: 'getNotifikasi', p: param },
+							dataType	: 'jsonp',
+							jsonp		: false,
+							url			: ws_host+"?callback=cbNotif",
+							timeout		: ws_timeout
+						});
+			xhjr.error(function(xhr,status){
+				var arr_err = setErrorText(xhr, status);
+				
+				if(arr_err[0] == 1){
+					showWrong();
+				}
+			});
+		}
+		
+		function cbNotif(data){
+			console.log("cbNotif "+data);
+			if(data[0] == 2)
+				goOut();
+			else if(data[0] == 1)
+				showWrong();
+			else
+				setHTML(data[2]);
+		}
+		
+		function setHTML(data){
+			var html = '';
+			if(data.length == 0)
+				showWrong("Anda belum memiliki notif. Tap untuk menyegarkan");
+			else{
+				for(var i in data){
+					var dt = data[i];
+					
+					html	+=	'<div id="place-for" class="list-group padding-lr-10px padding-tb-5px col-xs-12">'+
+									'<div class="list-group-item col-xs-12 padding-all-10px">'+
+										'<span class="col-xs-12 color-primary">'+
+											dt['isi']+
+										'</span>'+
+										'<span class="col-xs-12 margin-tb-5px">'+
+											dt['t_updatetime']+
+										'</span>'+
+									'</div>'+
+								'</div>'	;
+				}
+				$("#place-for").html(html);
+			}
+		}
+		
+		function showWrong(kata){
+			if(kata == undefined)
+				kata = 'Tap untuk menyegarkan';
+			$("#place-for").html('<div style="margin-top:50%" class="text-center" onclick="requestNotif();"><h1><i class="typcn typcn-refresh-outline"></i></h1><br/>'+kata+'</div>');
+		}
 	</script>
 </html>

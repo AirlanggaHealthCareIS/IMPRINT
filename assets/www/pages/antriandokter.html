@@ -1,64 +1,58 @@
-<div id="first" style="display:none">
-	<img src="../assets/images/ajax-loader.gif" style="margin-top:50%; margin-left:48%; width:20px"/>
-</div>
-<div id="exist" style="display:block; padding-bottom:60px !important" class="col-xs-12 padding-all-0px">
-	<div class="list-group padding-lr-10px padding-tb-5px col-xs-12">
-		<div class="list-group-item padding-all-5px col-xs-12">
-			<div class="col-xs-3">
-				<img src="../assets/images/pasien.jpg" class="img-circle" width="70px"/>
-			</div>
-			<div class="col-xs-9">
-				<span class="col-xs-12 text-uppercase color-primary">
-					<b>NUR MAULIDIYAH</b>
-				</span>
-				<span class="col-xs-12">
-					Keluhan: <br/>
-					Pusing, Batuk, ini, itu, semuanya, pokoknya sakitnya tuh disini
-				</span>
-			</div>
-		</div>
-		<div class="list-group-item padding-all-10px col-xs-12 secondary text-center text-uppercase">
-			<div class="col-xs-6 border-right">
-				<i class="typcn typcn-arrow-loop-outline"></i>Tunda
-			</div>
-			<div class="col-xs-6">
-				<i class="typcn typcn-delete-outline"></i>Batalkan
-			</div>
-		</div>
+<div id="page" class="margin-top-100px" >
+	<div class="list-group padding-all-10px bottom-border" style="background:white; display:none">
+		<input type="text" class="form-control input-md" id="cari" placeholder="Masukkan tanggal"/>
+		<div id="btn-tampil" class="btn primary form-control margin-tb-5px">Tampilkan Antrian</div>
+	</div>
+	<div id="place-for">
+		
 	</div>
 </div>
-<div id="notexist" style="display:none">
-	<div class="list-group padding-all-10px col-xs-12 text-center">
-		<div class="list-group-item padding-all-5px col-xs-12">
-			Belum ada pasien terdaftar dalam antrian Anda.
-		</div>
-	</div>
-</div>
-<nav class="navbar navbar-fixed-bottom primary" style="opacity:.8">	
-	<div class="navbar-header col-xs-12 padding-all-0px">
-		<div class="col-xs-12 padding-all-15px text-center text-uppercase">
-			<span class="col-xs-6 border-right"><i class="typcn typcn-microphone-outline"></i>Panggil</span>
-			<span class="col-xs-6"><i class="typcn typcn-thermometer"></i>Layani</span>
-		</div>
-	</div>
-</nav>
-
 <script>
 	var user 	= window.localStorage.getItem("user");
 		user 	= JSON.parse(user);
+	var cancelActiveID = null;
+	var pendingActiveID = null;
+	var serveActiveID = null;
+	var callActiveID = null;
 	$(document).ready(function() {
 		init(false, true, false);
 		
+		$('#cari').datepicker();
+		$('#cari').val(getCurrentDate('-'));
+		$('#cari').focus(function(){
+			$(this).blur();
+		});
+		$("#btn-cari").show();
+		$("#btn-cari").click(function(){
+				if($("#cari").parent().is(':visible')){
+					$("#cari").parent().hide("slow", function(){
+						$(this).slideUp();
+					});
+				}else{
+					$("#cari").parent().show("slow", function(){
+						$("html, body").animate({ scrollTop: 0 }, "slow");
+						$(this).slideDown();
+					});
+				}
+			});
+			
+		$("#btn-tampil").click(function(){
+			getAntrian();
+		});
 		getAntrian();
 	});
 	
 	function getAntrian(){
-		$("#first").html('<img src="../assets/images/ajax-loader.gif" style="margin-top:50%; margin-left:48%; width:20px"/>');
+		$("#place-for").html('<img src="../assets/images/ajax-loader.gif" style="margin-top:50%; margin-left:48%; width:20px"/>');
+		
+		var tgl		= $("#cari").val().split("-");
+			tgl		= tgl[2]+"-"+tgl[1]+"-"+tgl[0];
 		
 		var param 	= new Array();
 		param[0] 	= user['token'];//token
 		param[1] 	= user['userid'];//userid
 		param[2]	= window.localStorage.getItem("regid");//regid
+		param[3]	= tgl;
 		
 		var xhjr	= $.ajax({
 						data		: { f: 'queuedoctor', p: param },
@@ -71,8 +65,379 @@
 			var arr_err = setErrorText(xhr, status);
 			
 			if(arr_err[0] == 1){
-				showWrong('first', 'getAntrian()');
+				showWrong(arr_err[1]);
 			}
 		});
+	}
+	
+	function cbQDoctor(data){
+		console.log("cbDoctor "+data);
+		$("#btn-tampil").text('Tampilkan');	
+		if(data[0] == 2)
+			goOut();
+		else if(data[0] == 1)
+			showWrong(data[1]);
+		else
+			setHTML(data[2]);
+	}
+	
+	function setHTML(data){
+		var html = '';
+			
+		if(data!= null && data.length>0){	
+			for(var i in data){
+				var dt = data[i];
+				
+				var photo = '../assets/images/pasien.jpg';
+				if(typeof dt['urlphoto'] != 'undefined' && dt['urlphoto'] != null)
+					photo = dt['urlphoto'];
+					
+				var t_class = '';
+				var b_class = '';
+				var t_click = '';
+				var t_click2 = '';
+				var t_span = '';
+				var t_span2 = '';
+				if(dt['statusantrian'] == 1){
+					if(dt['waktumasuk'] == null){
+						t_class = 'primary';
+						t_span2 = '<i class="typcn typcn-thermometer"></i>Layani';
+						t_click2 = 'serveIt('+dt['idantrian']+',this)';
+					}else{
+						b_class = 'in-act';
+						t_class = 'in-act-s';
+						t_span2 = '<i class="typcn typcn-thumbs-ok"></i>Selesai';
+						t_click2 = 'finishIt('+dt['idantrian']+',this)';
+						}
+					t_click = 'pendingIt('+dt['idantrian']+',this)';
+					t_span = '<i class="typcn typcn-arrow-loop-outline"></i>Tunda';
+				}
+				else if(dt['statusantrian'] == 2){
+					t_class = 'secondary';
+					t_click = 'activateIt('+dt['idantrian']+',this)';
+					t_click2 = 'serveIt('+dt['idantrian']+',this)';
+					t_span = '<i class="typcn typcn-arrow-maximise-outline"></i>Aktifkan'; 
+					t_span2 = '<i class="typcn typcn-thermometer"></i>Layani';
+				}
+				
+				html	+=	'<div id="antrian_'+dt['idantrian']+'" class="list-group padding-lr-10px padding-tb-5px col-xs-12">'+
+								'<a href="pasien.html?idpasien='+dt['useridpasien']+'" class="list-group-item padding-all-5px col-xs-12 '+b_class+'">'+
+									'<div class="col-xs-2">'+
+										'<img src="'+photo+'" class="img-circle" width="70px"/>'+
+									'</div>'+
+									'<div class="col-xs-10">'+
+										'<span class="col-xs-12 text-uppercase color-primary">'+
+											'<b>'+dt['nama']+'</b>'+
+										'</span>'+
+										'<span class="col-xs-12">'+
+											'Keluhan: <br/>'+
+											dt['namakeluhan']+
+										'</span>'+
+									'</div>'+
+								'</a>'+
+								'<div class="list-group-item padding-all-0px col-xs-12 '+t_class+' text-center text-uppercase">'+
+									'<div class="col-xs-6 padding-tb-10px border-right border-bottom" id="pending_'+dt['idantrian']+'" onClick="'+t_click+'">'+
+										t_span+
+									'</div>'+
+									'<div class="col-xs-6 padding-tb-10px border-bottom" id="cancel_'+dt['idantrian']+'" onClick="cancelIt('+dt['idantrian']+',this)">'+
+										'<i class="typcn typcn-delete-outline"></i>Batal'+
+									'</div>'+
+									'<div class="col-xs-6 padding-tb-10px border-right " id="call_'+dt['idantrian']+'" onClick="callIt('+dt['idantrian']+',this)">'+
+										'<i class="typcn typcn-microphone-outline"></i>Panggil'+
+									'</div>'+
+									'<div class="col-xs-6 padding-tb-10px" id="serve_'+dt['idantrian']+'" onClick="'+t_click2+'">'+
+										t_span2+
+									'</div>'+
+								'</div>'+
+							'</div>';
+				
+			}
+		}
+		else{
+			html	+=	htmlKosong();
+		}
+		$("#place-for").html(html);
+	}
+	
+	function htmlKosong(){
+		var html = '<div class="list-group padding-all-10px col-xs-12">'+
+						'<div class="list-group-item padding-all-5px col-xs-12">'+
+							'Tidak ada pasien mengantri.'+
+						'</div>'+
+					'</div>';
+		return html;
+	}
+	
+	function cancelIt(idantrian, elem){
+		if($(elem).parent().prev().hasClass('in-act')){
+			alert("Pasien masih dalam pelayanan. Mohon selesaikan pelayanan terlebih dahulu");
+		}else{
+			$(elem).text("memproses...");
+			var id 	= elem.id.split('_');
+			cancelActiveID	= id[1];
+		
+			var param 	= new Array();
+			param[0] 	= user['token'];//token
+			param[1] 	= user['userid'];//userid
+			param[2]	= window.localStorage.getItem("regid");//regid
+			param[3]	= idantrian;
+			
+			var xhjr	= $.ajax({
+							data		: { f: 'canceldoctor', p: param },
+							dataType	: 'jsonp',
+							jsonp		: false,
+							url			: ws_host+"?callback=cbCancel",
+							timeout		: ws_timeout
+						});
+			xhjr.error(function(xhr,status){
+				var arr_err = setErrorText(xhr, status);
+				
+				if(arr_err[0] == 1){				
+					$(elem).html('<i class="typcn typcn-delete-outline"></i>Batalkan');
+					alert(arr_err[1]);
+				}
+			});
+		}
+	}
+	
+	function cbCancel(data){
+		console.log(data);
+		if(data[0] == 2)
+			goOut();
+		else if(data[0] == 0){
+			$("#antrian_"+cancelActiveID).remove();	
+			if($("[id^=antrian]").length == 0)
+				$("#place-for").html(htmlKosong());
+		}else{
+			$("#cancel_"+cancelActiveID).html('<i class="typcn typcn-delete-outline"></i>Batalkan');
+			alert(data[1])
+		}
+	}
+	
+	function pendingIt(idantrian, elem){
+		if($(elem).parent().prev().hasClass('in-act')){
+			alert("Pasien masih dalam pelayanan. Mohon selesaikan pelayanan terlebih dahulu");
+		}else{
+			
+			$(elem).text("memproses...");
+			var id 	= elem.id.split('_');
+			pendingActiveID	= id[1];
+		
+			var param 	= new Array();
+			param[0] 	= user['token'];//token
+			param[1] 	= user['userid'];//userid
+			param[2]	= window.localStorage.getItem("regid");//regid
+			param[3]	= idantrian;
+			
+			var xhjr	= $.ajax({
+							data		: { f: 'suspendqueue', p: param },
+							dataType	: 'jsonp',
+							jsonp		: false,
+							url			: ws_host+"?callback=cbPending",
+							timeout		: ws_timeout
+						});
+			xhjr.error(function(xhr,status){
+				var arr_err = setErrorText(xhr, status);
+				
+				if(arr_err[0] == 1){				
+					$(elem).html('<i class="typcn typcn-arrow-loop-outline"></i>Tunda');
+					alert(arr_err[1]);
+				}
+			});
+		}
+	}
+	
+	function cbPending(data){
+		console.log(data);
+		if(data[0] == 2)
+			goOut();
+		else if(data[0] == 0){
+			$("#antrian_"+pendingActiveID).insertAfter($("[id^='antrian']").last());
+			//change item into pending mode
+			$("#pending_"+pendingActiveID).parent().prev().removeClass('in-act');
+			$("#pending_"+pendingActiveID).parent().removeClass('primary in-act-s');
+			$("#pending_"+pendingActiveID).parent().addClass('secondary');
+			$("#pending_"+pendingActiveID).html('<i class="typcn typcn-arrow-maximise-outline"></i>Aktifkan');
+			$("#pending_"+pendingActiveID).attr("onClick","activateIt("+pendingActiveID+",this)");
+		}else{
+			$("#pending_"+pendingActiveID).html('<i class="typcn typcn-arrow-loop-outline"></i>Tunda');
+			alert(data[1])
+		}
+	}
+	
+	function activateIt(idantrian, elem){
+		$(elem).text("memproses...");
+		var id 	= elem.id.split('_');
+		pendingActiveID	= id[1];
+	
+		var param 	= new Array();
+		param[0] 	= user['token'];//token
+		param[1] 	= user['userid'];//userid
+		param[2]	= window.localStorage.getItem("regid");//regid
+		param[3]	= idantrian;
+		
+		var xhjr	= $.ajax({
+						data		: { f: 'activatequeue', p: param },
+						dataType	: 'jsonp',
+						jsonp		: false,
+						url			: ws_host+"?callback=cbActive",
+						timeout		: ws_timeout
+					});
+		xhjr.error(function(xhr,status){
+			var arr_err = setErrorText(xhr, status);
+			
+			if(arr_err[0] == 1){				
+				$(elem).html('<i class="typcn typcn-arrow-maximise-outline"></i>Aktifkan');
+				alert(arr_err[1]);
+			}
+		});
+	}
+	
+	function cbActive(data){
+	console.log(data);
+		if(data[0] == 2)
+			goOut();
+		else
+			getAntrian();
+	}
+	
+	function callIt(idantrian, elem){
+		if($(elem).parent().hasClass('secondary')){
+			alert("Antrian pasien yang Anda maksud sedang ditunda. Silakan layani antrian aktif terlebih dahulu");
+		}else{
+	
+			$(elem).text('memanggil...');
+			callActiveID = idantrian;
+			
+			var param 	= new Array();
+			param[0] 	= user['token'];//token
+			param[1] 	= user['userid'];//userid
+			param[2]	= window.localStorage.getItem("regid");//regid
+			param[3]	= idantrian;
+			
+			var xhjr	= $.ajax({
+							data		: { f: 'call', p: param },
+							dataType	: 'jsonp',
+							jsonp		: false,
+							url			: ws_host+"?callback=cbCall",
+							timeout		: ws_timeout
+						});
+			xhjr.error(function(xhr,status){
+				var arr_err = setErrorText(xhr, status);
+				
+				if(arr_err[0] == 1){				
+					$(elem).html('<i class="typcn typcn-microphone-outline"></i>Panggil');
+					alert(arr_err[1]);
+				}
+			});
+		}
+	}
+	
+	function cbCall(data){
+		console.log(data);
+		if(data[0] == 2)
+			goOut();
+		else{
+			$("#call_"+callActiveID).html('<i class="typcn typcn-microphone-outline"></i>Panggil');
+		}
+	}
+	
+	function serveIt(idantrian, elem){
+		
+		if($(elem).parent().hasClass('secondary')){
+			alert("Antrian pasien yang Anda maksud sedang ditunda. Silakan layani antrian aktif terlebih dahulu");
+		}else{
+	
+			$(elem).text('memproses...');
+			serveActiveID	= idantrian;
+			
+			var param 	= new Array();
+			param[0] 	= user['token'];//token
+			param[1] 	= user['userid'];//userid
+			param[2]	= window.localStorage.getItem("regid");//regid
+			param[3]	= serveActiveID;
+			
+			var xhjr	= $.ajax({
+							data		: { f: 'serve', p: param },
+							dataType	: 'jsonp',
+							jsonp		: false,
+							url			: ws_host+"?callback=cbServe",
+							timeout		: ws_timeout
+						});
+			xhjr.error(function(xhr,status){
+				var arr_err = setErrorText(xhr, status);
+				
+				if(arr_err[0] == 1){				
+					$(elem).html('<i class="typcn typcn-thermometer"></i>Layani');
+					alert(arr_err[1]);
+				}
+			});
+		}
+	}
+	
+	function cbServe(data){
+		console.log(data);
+		if(data[0] == 2)
+			goOut();
+		else if(data[0] == 0){
+			$("#serve_"+serveActiveID).html('<i class="typcn typcn-thumbs-ok"></i>Selesai');
+			$("#serve_"+serveActiveID).attr("onClick","finishIt("+serveActiveID+",this)");
+			//item
+			$('#antrian_'+serveActiveID+' .list-group-item').eq(0).removeClass('primary secondary');
+			$('#antrian_'+serveActiveID+' .list-group-item').eq(0).addClass('in-act');
+			$('#antrian_'+serveActiveID+' .list-group-item').eq(1).removeClass('primary secondary');
+			$('#antrian_'+serveActiveID+' .list-group-item').eq(1).addClass('in-act-s');
+		}else{
+			$("#serve_"+serveActiveID).html('<i class="typcn typcn-thermometer"></i>Layani');
+			alert(data[1])
+		}
+	}
+	
+	function finishIt(idantrian, elem){
+		
+		$(elem).text('memproses...');
+		serveActiveID	= idantrian;
+		
+		var param 	= new Array();
+		param[0] 	= user['token'];//token
+		param[1] 	= user['userid'];//userid
+		param[2]	= window.localStorage.getItem("regid");//regid
+		param[3]	= serveActiveID;
+		
+		var xhjr	= $.ajax({
+						data		: { f: 'finish', p: param },
+						dataType	: 'jsonp',
+						jsonp		: false,
+						url			: ws_host+"?callback=cbFinish",
+						timeout		: ws_timeout
+					});
+		xhjr.error(function(xhr,status){
+			var arr_err = setErrorText(xhr, status);
+			
+			if(arr_err[0] == 1){				
+				$(elem).html('<i class="typcn typcn-thumbs-ok"></i>Selesai');
+				alert(arr_err[1]);
+			}
+		});
+	}
+	
+	function cbFinish(data){
+		console.log(data);
+		if(data[0] == 2)
+			goOut();
+		else if(data[0] == 0){
+			$('#antrian_'+serveActiveID).remove();
+		}else{
+			$("#serve_"+serveActiveID).html('<i class="typcn typcn-thumbs-ok"></i>Selesai');
+			alert(data[1])
+		}
+	}
+	
+	function showWrong(text){
+		if(text == undefined) text = '';
+		
+		text += '. Tap untuk menyegarkan';
+		$("#btn-tampil").text('Tampilkan Antrian');
+		$("#place-for").html('<div style="margin-top:50%" class="text-center" onclick="getAntrian();"><h1><i class="typcn typcn-refresh-outline"></i></h1><br/>'+text+'</div>');
 	}
 </script>

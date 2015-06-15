@@ -167,6 +167,14 @@
 	background:#f4f7f8;
 	color:#7f8c8d !important;
 }
+.in-act{
+	background:#f1c40f;
+	color:#d35400 !important;
+}
+.in-act-s{
+	background:#d35400;
+	color:#ecf0f1 !important;
+}
 button.primary:hover,button.primary:active,div.primary:hover,div.primary:active
 ,input.primary:hover,input.primary:active,a.primary:hover,a.primary:active{
 	background : #c0392b;
@@ -350,3 +358,18 @@ button.primary:hover,button.primary:active,div.primary:hover,div.primary:active
 }
 .inf-rotation { animation: 2s roty infinite linear; }
 
+/*
+ * NOTIFICATION
+ */
+ .notif{
+	display:none;
+	position:absolute; 
+	top:2px; 
+	right:5px; 
+	border-radius:50%; 
+	background:red; 
+	width:20px; 
+	height:20px; 
+	font-size:15px; 
+	color:white;
+ }

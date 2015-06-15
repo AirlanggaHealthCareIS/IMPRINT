@@ -62,8 +62,15 @@
 	<script>
 		var user = window.localStorage.getItem("user");
 			user = JSON.parse(user);
+		var param = getUrlParameter();
 		$(document).ready(function(){
 			init(false, true, false, true);
+			
+			if(param['lang']!='undefined' && param['lat']!='undefined'){
+				$("#ipt-long").val(param['lang']);
+				$("#ipt-lat").val(param['lat']);
+				$("#btn-update").trigger('click');
+			}
 			
 			$(window).keydown(function(e){
 				if(e.keyCode==13){

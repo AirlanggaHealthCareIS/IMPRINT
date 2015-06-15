@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- Bootstrap core CSS -->
+		<link href="../assets/css/bootstrap.min.css" rel="stylesheet">
+		<!-- Custom styles for this apps -->
+		<link href="../assets/css/imprint.min.css" rel="stylesheet">
+		<link href="../assets/css/typicons.min.css" rel="stylesheet">
+		<!-- Core JS -->
+		<script type="text/javascript" src="../assets/js/jquery.min.js"></script>
+		<script type="text/javascript" src="../assets/js/bootstrap.min.js"></script>
+		<!-- FastClick -->
+		<script type="text/javascript" src="../assets/js/fastclick.js"></script>
+		<script type="application/javascript">
+			$(function() {
+				FastClick.attach(document.body);
+			});
+		</script>
+		<!-- Select Picker Plugin -->
+		<link href="../assets/css/bootstrap-select.css" rel="stylesheet">
+		<link href="../assets/css/bootstrap-select.min.css" rel="stylesheet">
+		<script type="text/javascript" src="../assets/js/bootstrap-select.js"></script>
+		<script type="text/javascript" src="../assets/js/bootstrap-select.min.js"></script>
+		<!-- Core Cordova -->
+		<script type="text/javascript" src="../assets/js/cordova-2.7.0.js"></script>
+		<script type="text/javascript" src="../assets/js/PushNotification.js"></script>
+		<script type="text/javascript" src="../assets/js/imprint.conf.js"></script>
+		<script type="text/javascript" src="../assets/js/imprint.min.js"></script>
+	</head>
+	<body>
+		<nav class="navbar navbar-default navbar-fixed-top primary" role="navigation" style="border:none">
+			<div class="container">
+				<div class="navbar-header">
+					<a href="antrian.html" class="navbar-brand color-white padding-tb-15px">
+						<i class="typcn typcn-chevron-left"></i>
+					</a>
+					<a class="navbar-brand color-white padding-all-15px">
+						Riwayat Antrian Pasien
+					</a>
+				</div>
+			</div>
+		</nav>
+		<div id="page" class="margin-top-50px">
+			<div class="col-xs-12 padding-all-20px bg-profil border-bottom color-white">
+				<div class="col-xs-2" style="height:70px" data-toggle="modal" data-target="#photoDialog">
+					<img src="../assets/images/pasien.jpg" id="foto" class="img-circle user-pic"  style="width:70px;height:70px" />
+				</div>
+				<div class="data col-xs-10 padding-all-0px">
+					<span class="col-xs-12 padding-all-0px text-uppercase" id="nama"></span>
+					<span class="col-xs-12 padding-all-0px" id="telp-pribadi"></span>
+					<p class="col-xs-12 padding-all-0px" id="alamat-pribadi"></p>
+				</div>
+			</div>
+			<div class="col-xs-12 padding-all-0px" id="place-for">
+				
+			</div>
+		</div>
+		<script>
+			var user = window.localStorage.getItem("user");
+				user = JSON.parse(user);
+			var param	= getUrlParameter();
+			$(document).ready(function(){
+				init(false,true,false, false);
+				
+				goReqPasien();
+			});			
+			
+			function goReqPasien(){
+				$("#place-for").html('<img src="../assets/images/ajax-loader.gif" style="margin-top:50%; margin-left:48%; width:20px"/>');
+		
+				var p 	= new Array();
+				p[0] 	= user['token'];//token
+				p[1] 	= user['userid'];//userid
+				p[2]	= window.localStorage.getItem("regid");//regid
+				p[3]	= param['idpasien'];//useridpasien
+				
+				var xhjr	= $.ajax({
+								data		: { f: 'pasienDetail', p: p },
+								dataType	: 'jsonp',
+								jsonp		: false,
+								url			: ws_host+"?callback=cbPasien",
+								timeout		: ws_timeout
+							});
+				xhjr.error(function(xhr,status){
+					var arr_err = setErrorText(xhr, status);
+					
+					if(arr_err[0] == 1){
+						showWrong(arr_err[1]);
+					}
+				});
+			}
+			
+			function cbPasien(data){
+				console.log(data);
+				if(data[0] == 2)
+					goOut();
+				else if(data[0] == 0){
+					setHTML(data[2]);
+				}else{
+					showWrong(data[1]);
+				}
+			}
+			
+			function setHTML(data){
+				$('#nama').text(data['nama']);
+				$('#telp-pribadi').text(data['notelp']);
+				$('#alamat-pribadi').text(data['alamatuser']);
+				if(typeof(data['urlphoto']) != 'undefined' && data['urlphoto'] != null){
+					$('#foto').attr('src', data['urlphoto']);
+				}
+				
+				var html = '';
+				for(var i in data['riwayat']){
+					var dt = data['riwayat'][i];
+					
+					html	+=	'<div class="list-group padding-lr-10px padding-tb-5px col-xs-12">'+
+									'<div class="list-group-item padding-all-5px col-xs-12">'+
+										'<span class="col-xs-3"><b>Tanggal</b></span>'+
+										'<span class="col-xs-9">'+dt['tgl']+'</span>'+
+										'<span class="col-xs-3"><b>Dokter</b></span>'+
+										'<span class="col-xs-9">'+dt['namadokter']+'</span>'+
+										'<span class="col-xs-3"><b>Keluhan</b></span>'+
+										'<span class="col-xs-9">'+dt['namakeluhan']+'</span>'+
+										'<span class="col-xs-3"><b>Lama Pelayanan</b></span>'+
+										'<span class="col-xs-9">'+dt['waktupelayanan']+'</span>'+
+									'</div>'+
+								'</div>';
+				}
+				
+				$('#place-for').html(html);
+			}
+			
+			function showWrong(text){
+				if(text == undefined) text = '';
+				
+				text += '. Tap untuk menyegarkan';
+				$("#place-for").html('<div style="margin-top:50%" class="text-center" onclick="goReqPasien();"><h1><i class="typcn typcn-refresh-outline"></i></h1><br/>'+text+'</div>');
+			}
+		</script>
+	</body>
+</html>

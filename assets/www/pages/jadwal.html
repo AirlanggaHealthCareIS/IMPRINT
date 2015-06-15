@@ -99,7 +99,6 @@
 			}
 			
 			function cbGetJadwal(data){
-			
 				if(data[0] == 0){
 					setHTMLJadwal(data[2]);
 				}
@@ -111,7 +110,7 @@
 				$("#btn-proses").html('<img src="../assets/images/ajax-loader(2).gif" width="20px"/>');
 				
 				var data 	= new Array();
-				for(var i = 1; i < 8; i++){
+				for(var i = 0; i < 7; i++){
 					var dt	= new Array();
 					dt[0]	= i;
 					dt[1]	= $("#awal_"+i).val();
@@ -147,7 +146,7 @@
 			}
 			
 			function cbSetJadwal(data){
-				
+				//alert(data)
 				if(data[0] == 0){
 					setHTMLJadwal(data[2]);
 					$("#btn-proses").text('edit');
@@ -159,47 +158,12 @@
 			function setHTMLJadwal(data){
 				var html = '';
 				
-				for(var i = 1; i < 8; i++){
+				for(var i = 1; i < 7; i++){
 					
 					var dt = data[i];
-					var	status = 'tersedia'; var check = '';
-					if(typeof dt != 'undefined' && dt != null && dt['islibur'] == '1'){
-						status = 'libur';
-						check  = 'checked';
-					}
-					var	hari = getDay(i);
-					var	jam_awal = '';
-					if(typeof dt != 'undefined' && dt != null && typeof dt['jam_awal'] != 'undefined' && dt['jam_awal'] != null && dt['islibur'] != '1')
-						jam_awal = dt['jam_awal'];
-					var	jam_akhir = '';
-					if(typeof dt != 'undefined' && dt != null && typeof dt['jam_akhir'] != 'undefined' && dt['jam_akhir'] != null && dt['islibur'] != '1')
-						jam_akhir = dt['jam_akhir'];
-					
-					html 	+= 	'<div class="container padding-all-10px border-bottom">'+
-									'<div class="col-xs-12 padding-all-0px">'+
-										'<div class="col-xs-4">'+
-											'<h4 class="color-primary text-uppercase padding-tb-10px">'+hari+'</h4>'+
-										'</div>'+
-										'<div class="col-xs-8 padding-tb-10px data">'+
-											'<span>'+jam_awal+' - '+jam_akhir+'</span><br/>'+
-											'<span>('+status+')</span>'+
-										'</div>'+
-										'<div class="col-xs-8 padding-tb-10px edit" style="display:none">'+
-											'<div class=" clockpicker">'+
-												'<input id="awal_'+i+'" type="text" class="form-control input-md margin-all-5px" placeholder="Jam Awal" value="'+jam_awal+'">'+
-											'</div>'+
-											'<div class=" clockpicker">'+
-												'<input id="akhir_'+i+'" type="text" class="form-control input-md margin-all-5px" placeholder="Jam Akhir" value="'+jam_akhir+'">'+
-											'</div>'+
-											'<div class="checkbox margin-all-5px">'+
-												'<label>'+
-													'<input id="libur_'+i+'" type="checkbox" '+check+' > Libur'+
-												'</label>'+
-											'</div>'+
-										'</div>'+
-									'</div>'+
-								'</div>';
+					html += writeHTML(dt, i);
 				}
+					html += writeHTML(data[0], 0);
 				
 				$("#page").html(html);
 				$('.clockpicker').clockpicker({
@@ -209,6 +173,47 @@
 				$('.clockpicker input').focus(function(){
 					$(this).blur();
 				});
+			}
+			
+			function writeHTML(dt, i){
+				var	status = 'tersedia'; var check = '';
+				if(typeof dt != 'undefined' && dt != null && dt['islibur'] == '1'){
+					status = 'libur';
+					check  = 'checked';
+				}
+				var	hari = getDay(i);
+				var	jam_awal = '';
+				if(typeof dt != 'undefined' && dt != null && typeof dt['jam_awal'] != 'undefined' && dt['jam_awal'] != null && dt['islibur'] != '1')
+					jam_awal = dt['jam_awal'];
+				var	jam_akhir = '';
+				if(typeof dt != 'undefined' && dt != null && typeof dt['jam_akhir'] != 'undefined' && dt['jam_akhir'] != null && dt['islibur'] != '1')
+					jam_akhir = dt['jam_akhir'];
+				
+				html 	= 	'<div class="container padding-all-10px border-bottom">'+
+								'<div class="col-xs-12 padding-all-0px">'+
+									'<div class="col-xs-4">'+
+										'<h4 class="color-primary text-uppercase padding-tb-10px">'+hari+'</h4>'+
+									'</div>'+
+									'<div class="col-xs-8 padding-tb-10px data">'+
+										'<span>'+jam_awal+' - '+jam_akhir+'</span><br/>'+
+										'<span>('+status+')</span>'+
+									'</div>'+
+									'<div class="col-xs-8 padding-tb-10px edit" style="display:none">'+
+										'<div class=" clockpicker">'+
+											'<input id="awal_'+i+'" type="text" class="form-control input-md margin-all-5px" placeholder="Jam Awal" value="'+jam_awal+'">'+
+										'</div>'+
+										'<div class=" clockpicker">'+
+											'<input id="akhir_'+i+'" type="text" class="form-control input-md margin-all-5px" placeholder="Jam Akhir" value="'+jam_akhir+'">'+
+										'</div>'+
+										'<div class="checkbox margin-all-5px">'+
+											'<label>'+
+												'<input id="libur_'+i+'" type="checkbox" '+check+' > Libur'+
+											'</label>'+
+										'</div>'+
+									'</div>'+
+								'</div>'+
+							'</div>';
+				return html;
 			}
 			
 			function showWrong(){

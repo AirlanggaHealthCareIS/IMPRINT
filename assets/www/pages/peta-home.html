@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="height:100%">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"  />
@@ -29,16 +29,18 @@
 		<script type="text/javascript" src="../assets/js/PushNotification.js"></script>
 		<script type="text/javascript" src="../assets/js/imprint.conf.js"></script>
 		<script type="text/javascript" src="../assets/js/imprint.min.js"></script>
+		<!-- MAP -->
+		<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDzMrkDa-CpRRZLK2n9xkX0Ez3P_qOpvYs&sensor=true"></script>
 	</head>
-	<body>
+	<body style="height:100%">
 		<nav class="navbar navbar-default navbar-fixed-top primary" role="navigation">
 			<div class="container">
 				<a class="navbar-brand color-white padding-all-15px">
 					Dokter
 				</a>
 				
-				<a href="peta-home.html" class="navbar-brand pull-right color-white padding-tb-15px">
-					peta
+				<a href="home.html" class="navbar-brand pull-right color-white padding-tb-15px">
+					daftar
 				</a>
 				<a id="btn-cari" class="navbar-brand pull-right color-white padding-tb-15px">
 					cari
@@ -62,7 +64,7 @@
 				</a>
 			</div>
 		</nav>
-		<div id="page" class="margin-top-100px" >
+		<div id="page" class="margin-top-100px" style="height:100%">
 			<div class="list-group padding-all-10px bottom-border" style="background:white; display:none">
 				<input type="text" class="form-control input-md" id="cari" placeholder="Kata pencarian..."/>
 				<select class="form-control input-md margin-tb-5px" id="order">
@@ -73,8 +75,7 @@
 				</select>
 				<div id="btn-tampil" class="btn primary form-control">Tampilkan</div>
 			</div>
-			<div id="place-for">
-				
+			<div id="peta" style="height:100%; background:black">				
 			</div>
 		</div>
 	</body>
@@ -83,7 +84,6 @@
 			user = JSON.parse(user);
 		$(document).ready(function(){
 			init(false, true, false, true);
-			$('select').selectpicker();
 			
 			if(unread_notif > 0){
 				$(".notif").text(unread_notif).show();
@@ -118,7 +118,7 @@
 		});
 		
 		function goCariDokter(){
-			$("#place-for").html('<img src="../assets/images/ajax-loader.gif" width="20px" style="margin-top:60%;margin-left:45%"/>');
+			$("#peta").html('<img src="../assets/images/ajax-loader.gif" width="20px" style="margin-top:60%;margin-left:45%"/>');
 			
 			$("#btn-tampil").text('memproses..');
 
@@ -159,41 +159,50 @@
 		}
 		
 		function setHTML(data){
-			var html = '';
+			var mapOptions = {
+				center: new google.maps.LatLng(longitude,latitude),
+				zoom: 13,
+				mapTypeId: google.maps.MapTypeId.ROADMAP
+			};
+			var map = new google.maps.Map(document.getElementById("peta"), mapOptions);				
 			
+			new google.maps.Marker({
+				position: new google.maps.LatLng(longitude,latitude),
+				map: map,
+				animation: google.maps.Animation.DROP,
+				icon:'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'
+			});
+			
+			var map_box = {};
+			var infowindow = {};
 			for(var i in data){
+				
 				var dt = data[i];
 				
-				var photo = '../assets/images/doctor.jpg';
-				if(typeof dt['urlphoto'] != 'undefined' && dt['urlphoto'] != null)
-					photo = dt['urlphoto'];
-				
-				html	+= '<div class="list-group padding-lr-10px padding-tb-5px col-xs-12">'+
-								'<a href="dokter.html?'+setToUrlParameter(dt, 'iddokter,nama,namajenis,rating,alamat_praktek,notelp,longi,lat,urlphoto,islibur,sekarang,banyakantrian,ratinguser')+'" class="list-group-item padding-all-5px color-black col-xs-12">'+
-									'<div class="col-xs-2 text-center col-sm-2 padding-all-5px">'+
-										'<img src="'+photo+'" class="img-circle"  style="width:70px"/>'+
-									'</div>'+
-									'<div class="col-xs-10 col-sm-10 padding-all-0px padding-lr-10px">'+
-										'<span class="col-xs-12 color-primary text-uppercase">'+
-											'<b id="namadokter">'+dt['nama']+'</b>'+
-										'</span>'+
-										'<span class="col-xs-12">'+
-											dt['namajenis']+
-										'</span>'+
-										'<span class="col-xs-12 color-primary">'+
-											htmlRating(dt['rating'])+
-										'</span>'+
-										'<span class="col-xs-12">'+
-											dt['alamat_praktek']+
-										'</span>'+
-										'<span class="col-xs-12">'+
-											dt['distance']+' km'+
-										'</span>'+
-									'</div>'+
-								'</a>'+
-							'</div>';
+				map_box[i] = new google.maps.Marker({
+					position: new google.maps.LatLng(dt['longi'],dt['lat']),
+					map: map,
+					animation: google.maps.Animation.DROP
+				});
+				map_box[i].infowindow = new google.maps.InfoWindow({
+					content: '<div id="content">'+
+								'<div id="siteNotice">'+
+								'</div>'+
+								'<div id="bodyContent">'+
+									'<a href="dokter.html?'+setToUrlParameter(dt, 'iddokter,nama,namajenis,rating,alamat_praktek,notelp,longi,lat,urlphoto,islibur,sekarang,banyakantrian,ratinguser')+'"'+
+										'<b>'+dt['nama']+'</b>'+
+									'</a>'+'</br>'+
+									dt['namajenis']+'</br>'+
+									htmlRating(dt['rating'])+'</br>'+
+									dt['alamat_praktek']+
+								'</div>'+
+							 '</div>'
+				});
+				google.maps.event.addListener(map_box[i], 'click', function() {
+					this.infowindow.open(map,this);
+				});
+
 			}
-			$("#place-for").html(html);
 		}
 		
 		function showWrong(){

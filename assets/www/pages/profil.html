@@ -217,7 +217,7 @@
 				param[9]	= $(".edit #nip").val();//nip
 				param[10]	= $(".edit #spesialis-dokter").val();//idjenis
 				param[13]	= $(".edit #alamat-praktek").val();//alamat praktek
-				
+				console.log("param->"+param);
 				var xhjr	= $.ajax({
 								data		: { f: 'updateprofile', p: param },
 								dataType	: 'jsonp',
@@ -303,6 +303,7 @@
 				if(lokasi_praktek == '')
 					lokasi_praktek = '-';
 				$(".data #lokasi-praktek, .edit #lokasi-praktek").text('('+lokasi_praktek+')');
+				$(".data #lokasi-praktek, .edit #lokasi-praktek").next().attr('href','peta.html?lang='+user['longi']+'&lat='+user['lat']);
 				
 				//nomor telp
 				$(".data #telp-pribadi").text(user['notelp']);
